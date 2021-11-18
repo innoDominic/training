@@ -2,17 +2,28 @@
 
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 Route::get('/', function () {
-    return view('welcome');
+    return view('login', ['result' => '']);
 });
+
+Route::get('/admin', function () {
+    if(session('user_type') == 0){
+        return view('admin');
+    }else if(session('user_type') == 1){
+        return view('login', ['result' => 'Teacher']);
+    }else{
+        return view('login', ['result' => '']);
+    }
+});
+
+Route::post('/', 'App\Http\Controllers\LoginController@authenticateUser');
+
+/*Route::get('/create-admin', function () {
+    DB::table('user')->insert([
+        'user_name' => 'joOra',
+        'first_name' => 'Jotaro',
+        'last_name' => 'Kujo',
+        'password' => Hash::make('admin'),
+        'user_type' => 0
+    ]);
+});*/
