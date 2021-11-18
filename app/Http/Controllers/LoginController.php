@@ -43,3 +43,4 @@ class LoginController extends Controller
         return view('login', ['result' => 'Failed, please try again']);
     }
 }
+
