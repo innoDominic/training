@@ -21,23 +21,31 @@
         </style>
     </head>
     <body class="antialiased">
-        <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0" style="flex-direction: row !important; justify-content: space-between !important; height: 100%;">
-            <div style="background-color: white; width: 20%;">
-                <ul>
-                    @if ( session('user_type') == 0 )
-                        <li>Students</li>
-                        <li>Teachers</li>
-                        <li>Classes</li>
-                        <li>Plot Classes</li>
-                        <li>Plot Teachers</li>
-                    @elseif ( session('user_type') == 1 )
-                        <li>Attendance</li>
-                        <li>Attendance Reports</li>
-                    @endif
-                </ul>
-            </div>
-            <div style="background-color: white; width: 80%;">
-                @yield('content')
+        <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0" style="flex-direction: column !important; justify-content: flex-start !important; padding-top: 40px;">
+            <div style="width: 100%; margin-bottom:80px;"><a href="/logout" style="float: right; color: white; padding-right:20px">Logout</a></div>
+            <div style="flex-direction: row !important; justify-content: space-between !important; width :100%;">
+                <div style="background-color: white; width: 20%; text-align: center;">
+                    <h3>Attendance System</h3>
+                    <ul>
+                        @if ( session('user_type') == 0 )
+
+                            <li><a href="/admin/student">Students</a></li>
+                            <li><a href="/admin/teacher">Teachers</a></li>
+                            <li><a href="/admin/classes">Classes</a></li>
+                            <li><a href="/admin/plot_classes">Plot Classes</a></li>
+                            <li><a href="/admin/plot_teachers">Plot Teachers</a></li>
+
+                        @elseif ( session('user_type') == 1 )
+
+                            <li><a href="">Attendance</a></li>
+                            <li><a href="">Attendance Reports</a></li>
+
+                        @endif
+                    </ul>
+                </div>
+                <div style="background-color: white; width: 80%; display:flex; flex-direction: column; justify-content: center; align-items: center;">
+                    @yield('content')
+                </div>
             </div>
         </div>
     </body>
