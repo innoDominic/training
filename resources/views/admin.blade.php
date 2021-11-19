@@ -51,9 +51,39 @@
         @section('content')
 
             <div style="width: 100%; display:flex; flex-direction: row; justify-content: flex-start; align-items: center;">
-                <h2>Students</h2>
-                <button onclick="window.open('/admin/student-create','_self')" style="max-height: 50px; padding: 10px;">Create</button>
-                <button style="max-height: 50px; padding: 10px;">CSV Upload</button>
+                 <h2>Students</h2>
+                 <button onclick="window.open('/admin/student-create','_self')" style="max-height: 50px; padding: 10px;">Create</button>
+                 <button style="max-height: 50px; padding: 10px;">CSV Upload</button>
+            </div>
+
+            <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center;">
+                
+                 <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/student-create">
+                     <div style="width:33%;">
+                         <label>
+                             Name:
+                             <input type="text" class="searchStudentByName" name="searchStudentByName" style="border: solid 1px black;" />
+                         </label>     
+                     </div>
+                     <div style="width:33%;">
+                         <label>
+                             Class:
+                             <select type="text" class="searchStudentByClass" name="searchStudentByClass" style="border: solid 1px black;">
+                                 
+                             </select>
+                         </label>
+                     </div>
+                     <div style="width:33%;">
+                         <label>
+                             Teacher:
+                             <select type="text" class="searchStudentByTeacher" name="searchStudentByTeacher" style="border: solid 1px black;">{!! $teacher_options !!}</select>
+                         </label>
+                     </div><br />
+                     <div style="width: 100%; display: flex; flex-direction: column; justify-content: flex-end;">
+                         <button style="max-width: 200px; margin: 0 auto; max-height: 50px; padding: 10px;">Search</button>
+                     </div>
+                 </form>
+
             </div>
 
         @endsection

@@ -10,7 +10,7 @@ use App\Models\Student;
 
 class StudentController extends Controller
 {
-   public function createStudent(Request $request){
+   public function create(Request $request){
     
        #Check if Request is empty
        if(!$request->has('student_id') || empty($request->input('student_id'))) {
@@ -53,8 +53,6 @@ class StudentController extends Controller
        $user = new User;
        $student = new Student;
 
-       #return $user->getConnection()->getSchemaBuilder()->getColumnListing('user');
-
        $get_username_duplicate = $user::where('user_name', $request->input('user_name'))->get();
        $get_student_id_duplicate = $student::where('student_id', $request->input('student_id'))->get();
 
@@ -87,6 +85,10 @@ class StudentController extends Controller
            'page' => 'student-create',
            'result' => 'User Saved'
        ]);
+
+   }
+
+   private function ifValuesExists(){
 
    }
 }

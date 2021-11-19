@@ -1,9 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
-#use App\Http\Controllers;
+use App\Http\Controllers\TeacherController;
 
 Route::get('/', function () {
     if(!session()->has('user_no')){
@@ -14,7 +15,7 @@ Route::get('/', function () {
 
         if($user_type == 0){
 
-            return view('admin', ['page' => 'student']);
+            return redirect('/admin/student');
         }else if($user_type == 1){
 
             return view('login', ['result' => 'teacher']);
@@ -24,73 +25,93 @@ Route::get('/', function () {
 
 Route::get('/logout', function () {
 
-    session()->flush();
+    Session::flush();
     return redirect('/');
 
 });
 
 Route::get('/admin/{page}', function ($page) {
-    $user_type = session('user_type');
+    if(Session::has('user_type')){
+        $user_type = Session::get('user_type');
 
-    if($user_type == 0){
+        if($user_type == 0){
 
-        if( Str::contains($page, '-create') ){
+            if( Str::contains($page, '-create') ){
 
-            return view('admin', [
-                'page' => $page,
-                'result' => ''
-            ]);
+                return view('admin', [
+                   'page' => $page,
+                   'result' => ''
+                ]);
+
+            }else{
+
+                list($teacher_names, $teacher_ids) = TeacherController::getList();
+                $count = count($teacher_names);
+                $teacher_select_options = "";
+
+                for($i = 0; $i < $count; $i++){
+                    $teacher_select_options .= "
+                        <option value='". $teacher_ids[$i] ."'>". $teacher_names[$i] ."</option>
+                    ";
+                }
+
+                return view('admin', [
+                    'page' => $page,
+                    'teacher_options' => $teacher_select_options
+                 ]);
+
+            }
+        }else if($user_type == 1){
+
+            return redirect('/teacher');
 
         }else{
 
-            return view('admin', ['page' => $page]);
+            return view('login', ['result' => '']);
 
         }
-    }else if($user_type == 1){
+     }
 
-        return view('teacher', ['page' => 'attendance']);
-
-    }else{
-
-        return view('login', ['result' => '']);
-
-    }
+     return redirect('/');
 })->name('admin');
 
 Route::get('/teacher/{page}', function ($page) {
-    $user_type = session('user_type');
+    if(Session::has('user_type')){
+       $user_type = Session::get('user_type');
 
-    if($user_type == 0){
-        
-        return view('admin', ['page' => 'student']);
-
-    }else if($user_type == 1){
-
-        return view('teacher', ['page' => $page]);
-
-    }else{
-
-        return view('login', ['result' => '']);
-        
+       if($user_type == 0){
+           
+           return redirect('/admin/student');
+   
+       }else if($user_type == 1){
+   
+           return view('teacher', ['page' => $page]);
+   
+       }else{
+   
+           return redirect('/');
+   
+       }
     }
+
+    return redirect('/');
 });
 
 Route::post('/', 'LoginController@authenticateUser');
-Route::post('/admin/student-create', 'StudentController@createStudent');
+Route::post('/admin/student-create', 'StudentController@create');
 
-/*Route::get('/create-teacher', function () {
-    DB::table('user')->insert([
-        'user_name' => 'joHiga',
-        'first_name' => 'Josuke',
-        'last_name' => 'Higashikata',
-        'password' => Hash::make('teacher'),
-        'user_type' => 1
-    ]);
 
-    $user = User::where('user_name', 'joHiga')->first();
-    DB::table('teacher')->insert([
-        'teacher_title' => 'Sensei',
-        'teacher_id' => 'Josuke_0002',
-        'user_no' => $user->user_no
-    ]);
+/*Route::get('/test', function () {
+     list($teacher_names, $teacher_ids) = TeacherController::getList();
+     $count = count($teacher_names);
+     $teacher_select_options = "a";
+
+     for($i = 0; $i < $count; $i++){
+
+         $name = $teacher_names[$i];
+         $id = $teacher_ids[$i];
+
+         $teacher_select_options .= "<option value='" . $id . "'>" . $name . "</option>";
+
+     }
 });*/
