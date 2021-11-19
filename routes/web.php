@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\ClassesController;
 
 Route::get('/', function () {
     if(!session()->has('user_no')){
@@ -45,20 +46,31 @@ Route::get('/admin/{page}', function ($page) {
 
             }else{
 
-                list($teacher_names, $teacher_ids) = TeacherController::getList();
-                $count = count($teacher_names);
+                list($teacher_names, $teacher_ids) = TeacherController::getNumAndName();
+                $teacher_count = count($teacher_names);
                 $teacher_select_options = "";
 
-                for($i = 0; $i < $count; $i++){
+                for($i = 0; $i < $teacher_count; $i++){
                     $teacher_select_options .= "
                         <option value='". $teacher_ids[$i] ."'>". $teacher_names[$i] ."</option>
                     ";
                 }
 
+                list($class_names, $class_ids) = ClassesController::getNumAndName();
+                $class_count = count($teacher_names);
+                $class_select_options = "";
+
+                for($i = 0; $i < $class_count; $i++){
+                    $class_select_options .= "
+                        <option value='". $class_ids[$i] ."'>". $class_names[$i] ."</option>
+                    ";
+                }
+
                 return view('admin', [
                     'page' => $page,
-                    'teacher_options' => $teacher_select_options
-                 ]);
+                    'teacher_options' => $teacher_select_options,
+                    'class_options' => $class_select_options
+                ]);
 
             }
         }else if($user_type == 1){
@@ -102,16 +114,13 @@ Route::post('/admin/student-create', 'StudentController@create');
 
 
 /*Route::get('/test', function () {
-     list($teacher_names, $teacher_ids) = TeacherController::getList();
-     $count = count($teacher_names);
-     $teacher_select_options = "a";
+    ClassesController::getNumAndName();
+    /*$class_count = count($teacher_names);
+    $class_select_options = "";
 
-     for($i = 0; $i < $count; $i++){
-
-         $name = $teacher_names[$i];
-         $id = $teacher_ids[$i];
-
-         $teacher_select_options .= "<option value='" . $id . "'>" . $name . "</option>";
-
-     }
+    for($i = 0; $i < $class_count; $i++){
+        $class_select_options .= "
+            <option value='". $class_ids[$i] ."'>". $class_names[$i] ."</option>
+        ";
+    }
 });*/

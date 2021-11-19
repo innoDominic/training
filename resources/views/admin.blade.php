@@ -69,7 +69,7 @@
                          <label>
                              Class:
                              <select type="text" class="searchStudentByClass" name="searchStudentByClass" style="border: solid 1px black;">
-                                 
+                                 {!! $class_options !!}
                              </select>
                          </label>
                      </div>
