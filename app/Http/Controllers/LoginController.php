@@ -27,15 +27,19 @@ class LoginController extends Controller
             if($user->user_type == 0){
 
                 return redirect('/admin/student');
+
             }else if($user->user_type == 1){
 
                 return redirect('/teacher/attendance');
+
             }else if($user->user_type == 2){
 
                 return view('login', ['result' => 'Student']);
+
             }else{
 
                 return view('login', ['result' => 'Unkown User: ' . $user->user_type]);
+                
             }
         }
 

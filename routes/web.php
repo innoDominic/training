@@ -1,35 +1,51 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+
+#use App\Http\Controllers;
 
 Route::get('/', function () {
     if(!session()->has('user_no')){
 
         return view('login', ['result' => '']);
-
     }else{
         $user_type = session('user_type');
 
         if($user_type == 0){
+
             return view('admin', ['page' => 'student']);
         }else if($user_type == 1){
-            return view('login', ['result' => 'Teacher']);
+
+            return view('login', ['result' => 'teacher']);
         }
     }
 });
 
 Route::get('/logout', function () {
+
     session()->flush();
     return redirect('/');
+
 });
 
 Route::get('/admin/{page}', function ($page) {
     $user_type = session('user_type');
 
     if($user_type == 0){
-        
-        return view('admin', ['page' => $page]);
 
+        if( Str::contains($page, '-create') ){
+
+            return view('admin', [
+                'page' => $page,
+                'result' => ''
+            ]);
+
+        }else{
+
+            return view('admin', ['page' => $page]);
+
+        }
     }else if($user_type == 1){
 
         return view('teacher', ['page' => 'attendance']);
@@ -39,7 +55,7 @@ Route::get('/admin/{page}', function ($page) {
         return view('login', ['result' => '']);
 
     }
-});
+})->name('admin');
 
 Route::get('/teacher/{page}', function ($page) {
     $user_type = session('user_type');
@@ -55,11 +71,12 @@ Route::get('/teacher/{page}', function ($page) {
     }else{
 
         return view('login', ['result' => '']);
-
+        
     }
 });
 
-Route::post('/', 'App\Http\Controllers\LoginController@authenticateUser');
+Route::post('/', 'LoginController@authenticateUser');
+Route::post('/admin/student-create', 'StudentController@createStudent');
 
 /*Route::get('/create-teacher', function () {
     DB::table('user')->insert([

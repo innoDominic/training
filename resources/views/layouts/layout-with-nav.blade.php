@@ -22,9 +22,11 @@
     </head>
     <body class="antialiased">
         <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0" style="flex-direction: column !important; justify-content: flex-start !important; padding-top: 40px;">
-            <div style="width: 100%; margin-bottom:80px;"><a href="/logout" style="float: right; color: white; padding-right:20px">Logout</a></div>
-            <div style="flex-direction: row !important; justify-content: space-between !important; width :100%;">
-                <div style="background-color: white; width: 20%; text-align: center;">
+
+            <div style="width: 100%; margin-bottom:20px;"><a href="/logout" style="float: right; color: white; padding-right:20px">Logout</a></div>
+
+            <div style="display: flex; flex-direction: row !important; justify-content: space-between !important; width :100%;">
+                <div style="background-color: white; width: 20%; text-align: center; border: solid black 1px; border-right: none !important;">
                     <h3>Attendance System</h3>
                     <ul>
                         @if ( session('user_type') == 0 )
@@ -43,8 +45,10 @@
                         @endif
                     </ul>
                 </div>
-                <div style="background-color: white; width: 80%; display:flex; flex-direction: column; justify-content: center; align-items: center;">
-                    @yield('content')
+                <div style="background-color: white; width: 80%; display:flex; flex-direction: column; justify-content: center; align-items: center; padding: 0px 0px 20px 40px; border: solid black 1px;">
+                    <div style="width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                        @yield('content')
+                    </div>
                 </div>
             </div>
         </div>
