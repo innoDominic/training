@@ -45,7 +45,7 @@
                         @endif
                     </ul>
                 </div>
-                <div style="background-color: white; width: 80%; display:flex; flex-direction: column; justify-content: center; align-items: center; padding: 0px 0px 20px 40px; border: solid black 1px;">
+                <div style="background-color: white; width: 80%; display:flex; flex-direction: column; justify-content: center; align-items: center; padding: 0px 40px 20px 40px; border: solid black 1px;">
                     <div style="width: 100%; display: flex; flex-direction: column; justify-content: center;">
                         @yield('content')
                     </div>

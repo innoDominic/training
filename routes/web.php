@@ -4,6 +4,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ClassesController;
 
@@ -66,8 +67,15 @@ Route::get('/admin/{page}', function ($page) {
                     ";
                 }
 
+                $output = '';
+
+                if(request()->has('result')){
+                    $output = request('result');
+                }
+
                 return view('admin', [
                     'page' => $page,
+                    'result' => $output,
                     'teacher_options' => $teacher_select_options,
                     'class_options' => $class_select_options
                 ]);
@@ -111,6 +119,7 @@ Route::get('/teacher/{page}', function ($page) {
 
 Route::post('/', 'LoginController@authenticateUser');
 Route::post('/admin/student-create', 'StudentController@create');
+Route::post('/admin/student/csv', 'StudentController@createWithCSV');
 
 
 /*Route::get('/test', function () {
