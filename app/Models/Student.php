@@ -10,5 +10,6 @@ class Student extends Model
     use HasFactory;
 
     protected $table = 'student';
+    protected $primaryKey = 'student_no';
     public $timestamps = false;
 }

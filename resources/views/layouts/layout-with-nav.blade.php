@@ -18,6 +18,12 @@
             body {
                 font-family: 'Nunito', sans-serif;
             }
+
+            .paginate-nav div{ display: inline-block !important; padding: 0 20px; }
+
+            .paginate-nav div span{
+                
+            }
         </style>
     </head>
     <body class="antialiased">

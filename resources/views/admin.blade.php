@@ -45,7 +45,44 @@
         @endsection
     @elseif( Str::contains($page, '-edit') )
         @section('content')
-        
+        <div style="width: 100%; display:flex; flex-direction: row; justify-content: flex-start; align-items: center;">
+                <h2 style="width:100%; text-align: left;">Edit Student</h2>
+                <h2 style="width:100%; text-align: left;">{{ $result }}</h2>
+            </div>
+            <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center;">
+                <form style="display: flex; flex-direction: column; width: 100%;" method="POST" action="/admin/student-edit">
+                <?php #dd($student_info)?>
+
+                    <label> 
+                        Student ID: 
+                        <input type="text" value="{{$student_info->student_id}}" name="student_id" class="student_id" style="border: solid 1px black;" />
+                        @csrf
+                    </label>
+                    <label> 
+                        Username: 
+                        <input type="text" value="{{$student_info->user_name}}" name="user_name" class="user_name" style="border: solid 1px black;" />
+                        @csrf
+                    </label>
+                    <label> 
+                        Password: 
+                        <input type="password" value="{{$student_info->password}}" name="password" class="password" style="border: solid 1px black;" />
+                        @csrf
+                    </label>
+                    <label> 
+                        First Name: 
+                        <input type="text" value="{{$student_info->first_name}}" name="first_name" class="first_name" style="border: solid 1px black;" />
+                        @csrf
+                    </label>
+                    <label> 
+                        Last Name: 
+                        <input type="text" value="{{$student_info->last_name}}" name="last_name" class="last_name" style="border: solid 1px black;" />
+                        @csrf
+                    </label>
+                    <input type="text" value="{{ $student_info->user_no }}" name="user_no" hidden/>
+                    <button style="background-color: white; border:solid 1px black; width: fit-content; color: black !important;">Edit</button>
+
+                </form>
+            </div>
         @endsection
     @else
         @section('content')
@@ -62,13 +99,9 @@
                  <p style="float:right; width: fit-content; margin-left: auto;">{{ $result }}</p>
             </div>
 
-            <script>
-               
-            </script>
-
             <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center;">
                 
-                 <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/student">
+                 <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/student/search">
                      <div style="width:33%;">
                          <label>
                              Name:
@@ -120,15 +153,18 @@
                         </tr>
                     </thead>
                     <tbody>
-                         <tr>
-                            <td>Student ID</td>
-                            <td>Full Name</td>
-                            <td>Class</td>
-                            <td>Teacher</td>
-                            <td>Actions</td>
-                        </tr>
+                         @foreach($student_table_results as $students)
+                             <tr>
+                                 <td>{{$students->student_id}}</td>
+                                 <td>{{$students->student_first_name}} {{$students->student_last_name}}</td>
+                                 <td>{{$students->classes_name}}</td>
+                                 <td>{{$students->teacher_first_name}} {{$students->teacher_last_name}}</td>
+                                 <td><a href="/admin/student-edit?id={{$students->user_no}}">Edit</a> | <a>Delete</a></td>
+                             </tr>
+                         @endforeach
                     </tbody>
                 </table>
+                <div class="paginate-nav">{{$student_table_results->onEachSide(3)->links()}}</div>
 
             </div>
 
