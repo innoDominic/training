@@ -157,8 +157,8 @@
                              <tr>
                                  <td>{{$students->student_id}}</td>
                                  <td>{{$students->student_first_name}} {{$students->student_last_name}}</td>
-                                 <td>{{$students->classes_name}}</td>
-                                 <td>{{$students->teacher_first_name}} {{$students->teacher_last_name}}</td>
+                                 <td></td>
+                                 <td></td>
                                  <td><a href="/admin/student-edit?id={{$students->user_no}}">Edit</a> | <a href="/admin/student/delete?id={{$students->user_no}}">Delete</a></td>
                              </tr>
                          @endforeach

@@ -43,14 +43,14 @@ Route::get('/admin/{page}', function ($page) {
 
         if($user_type == 0){
 
-            if( Str::contains($page, '-create') ){
+            if( Str::contains($page, 'student-create') ){
 
                 return view('admin', [
                    'page' => $page,
                    'result' => ''
                 ]);
 
-            }else if( Str::contains($page, '-edit') ){
+            }else if( Str::contains($page, 'student-edit') ){
 
              return view('admin', [
                  'page' => 'student-edit',

@@ -329,13 +329,8 @@ class StudentController extends Controller
 
         }
 
-        $student_list = $student->select('student.user_no','student.student_id', 'userA.first_name as student_first_name', 'userA.last_name as student_last_name', 'classes.classes_name', 'userB.first_name as teacher_first_name', 'userB.last_name as teacher_last_name')
-            ->join('user as userA', 'userA.user_no', '=', 'student.user_no')
-               ->join('plotted_classes as plot_classA', 'plot_classA.user_no', '=', 'student.user_no')
-               ->join('classes', 'classes.classes_no', '=', 'plot_classA.classes_no')
-               ->join('plotted_classes as plot_classB', 'plot_classB.classes_no', '=', 'plot_classA.classes_no')
-               ->join('teacher', 'teacher.user_no', '=', 'plot_classB.user_no')
-               ->join('user as userB', 'userB.user_no', '=', 'teacher.user_no')->paginate(3);
+        $student_list = $student->select('student.user_no','student.student_id', 'user.first_name as student_first_name', 'user.last_name as student_last_name')
+            ->join('user as user', 'user.user_no', '=', 'student.user_no')->paginate(3);
 
         return view('admin', [
            'page' => 'student',
