@@ -170,6 +170,18 @@ class StudentController extends Controller
 
     }
 
+    public function delete(Request $request){
+        $user = new User;
+        $student = new Student;
+        $plotted_classes = new PlottedClasses;
+
+        $user->where('user_no', '=', request('id'))->delete();
+        $student->where('user_no', '=', request('id'))->delete();
+        $plotted_classes->where('user_no', '=', request('id'))->delete();
+
+        return redirect()->route('admin', ['page' => 'student']);
+    }
+
     public function createWithCSV(Request $request){
         if($request->hasFile('csvFile')){
 

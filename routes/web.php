@@ -158,6 +158,7 @@ Route::post('/admin/student/search', function(){
 Route::post('/', 'LoginController@authenticateUser');
 Route::post('/admin/student-create', 'StudentController@create');
 Route::post('/admin/student-edit', 'StudentController@edit');
+Route::get('/admin/student/delete', 'StudentController@delete');
 Route::post('/admin/student/csv', 'StudentController@createWithCSV');
 Route::post('/admin/student/search', 'StudentController@show');
 
