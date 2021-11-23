@@ -37,71 +37,54 @@ Route::get('/logout', function () {
 
 });
 
-Route::get('/admin/{page}', function ($page) {
-    if(Session::has('user_type')){
-        $user_type = Session::get('user_type');
+Route::get('/admin/student/create', function () {
 
-        if($user_type == 0){
+    return view('student-create', [
+        'result' => ''
+    ]);
 
-            if( Str::contains($page, 'student-create') ){
+})->name('student-create');
 
-                return view('admin', [
-                   'page' => $page,
-                   'result' => ''
-                ]);
+Route::get('/admin/student/edit', function () {
 
-            }else if( Str::contains($page, 'student-edit') ){
+    return view('student-edit', [
+        'result' => '',
+        'student_info' => StudentController::getStudentInfo(request('id'))
+    ]);
+   
+})->name('student-edit');
 
-             return view('admin', [
-                 'page' => 'student-edit',
-                 'result' => '',
-                 'student_info' => StudentController::getStudentInfo(request('id'))
-             ]);
+Route::get('/admin/student', function () {
+ 
+    list($teacher_names, $teacher_ids) = TeacherController::getNumAndName();
+    $teacher_count = count($teacher_names);
+    $teacher_select_options = "";
 
-            }else{
+    for($i = 0; $i < $teacher_count; $i++){
+        $teacher_select_options .= "
+            <option value='". $teacher_ids[$i] ."'>". $teacher_names[$i] ."</option>
+        ";
+    }
 
-                list($teacher_names, $teacher_ids) = TeacherController::getNumAndName();
-                $teacher_count = count($teacher_names);
-                $teacher_select_options = "";
+    list($class_names, $class_ids) = ClassesController::getNumAndName();
+    $class_count = count($teacher_names);
+    $class_select_options = "";
 
-                for($i = 0; $i < $teacher_count; $i++){
-                    $teacher_select_options .= "
-                        <option value='". $teacher_ids[$i] ."'>". $teacher_names[$i] ."</option>
-                    ";
-                }
+    for($i = 0; $i < $class_count; $i++){
+        $class_select_options .= "
+            <option value='". $class_ids[$i] ."'>". $class_names[$i] ."</option>
+        ";
+    }
 
-                list($class_names, $class_ids) = ClassesController::getNumAndName();
-                $class_count = count($teacher_names);
-                $class_select_options = "";
+    $result = '';
 
-                for($i = 0; $i < $class_count; $i++){
-                    $class_select_options .= "
-                        <option value='". $class_ids[$i] ."'>". $class_names[$i] ."</option>
-                    ";
-                }
+    if(request()->has('result')){
+        $result = request('result');
+    }
 
-                $result = '';
+    return StudentController::show(request(), $teacher_select_options, $class_select_options, $result);
 
-                if(request()->has('result')){
-                    $result = request('result');
-                }
-
-                return StudentController::show(request(), $teacher_select_options, $class_select_options, $result);
-
-            }
-        }else if($user_type == 1){
-
-            return redirect('/teacher');
-
-        }else{
-
-            return view('login', ['result' => '']);
-
-        }
-     }
-
-     return redirect('/');
-})->name('admin');
+})->name('student-list');
 
 Route::get('/teacher/{page}', function ($page) {
     if(Session::has('user_type')){
@@ -156,8 +139,8 @@ Route::post('/admin/student/search', function(){
 });
 
 Route::post('/', 'LoginController@authenticateUser');
-Route::post('/admin/student-create', 'StudentController@create');
-Route::post('/admin/student-edit', 'StudentController@edit');
+Route::post('/admin/student/create', 'StudentController@create');
+Route::post('/admin/student/edit', 'StudentController@edit');
 Route::get('/admin/student/delete', 'StudentController@delete');
 Route::post('/admin/student/csv', 'StudentController@createWithCSV');
 Route::post('/admin/student/search', 'StudentController@show');

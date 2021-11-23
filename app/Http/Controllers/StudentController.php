@@ -16,51 +16,44 @@ class StudentController extends Controller
         #Check if Request is empty
         if(!$request->has('student_id') || empty($request->input('student_id'))) {
 
-           return view('admin', [
-               'page' => 'student-create',
+           return view('student-create', [
                'result' => 'Please fill up all the fields1'
            ]);  
 
         }else if(!$request->has('user_name') || empty($request->input('user_name'))) {
 
-              return view('admin', [
-                'page' => 'student-create',
+              return view('student-create', [
                 'result' => 'Please fill up all the fields2'
             ]); 
 
         }else if(!$request->has('password') || empty($request->input('password'))) {
 
-             return view('admin', [
-                'page' => 'student-create',
+             return view('student-create', [
                 'result' => 'Please fill up all the fields3'
              ]); 
 
         }else if(!$request->has('first_name') || empty($request->input('first_name'))) {
 
-             return view('admin', [
-                'page' => 'student-create',
+             return view('student-create', [
                 'result' => 'Please fill up all the fields4'
              ]); 
 
         }else if(!$request->has('last_name') || empty($request->input('last_name'))) {
 
-             return view('admin', [
-                'page' => 'student-create',
+             return view('student-create', [
                 'result' => 'Please fill up all the fields5'
              ]); 
         
         }
         
         if($this->checkIfUsernameExist($request->input('user_name'))){
-            return view('admin', [
-               'page' => 'student-create',
+            return view('student-create', [
                 'result' => 'Username Already exists'
             ]);
         }
 
         if($this->checkIfStudentIdExist($request->input('student_id'))){
-           return view('admin', [
-              'page' => 'student-create',
+           return view('student-create', [
               'result' => 'Student ID Already exists'
            ]);
         }
@@ -79,8 +72,7 @@ class StudentController extends Controller
         $student->user_no = $user->user_no;
         $student->save();
 
-        return view('admin', [
-            'page' => 'student-create',
+        return view('student-create', [
             'result' => 'User Saved'
         ]);
 
@@ -91,55 +83,53 @@ class StudentController extends Controller
         #Check if Request is empty
         if(!$request->has('student_id') || empty($request->input('student_id'))) {
 
-           return view('admin', [
-               'page' => 'student-edit',
-               'result' => 'Please fill up all the fields1'
+           return view('student-edit', [
+               'result' => 'Please fill up the fields',
+               'student_info' => StudentController::getStudentInfo($request->input('user_no'))
            ]);  
 
         }else if(!$request->has('user_name') || empty($request->input('user_name'))) {
 
-              return view('admin', [
-                'page' => 'student-edit',
-                'result' => 'Please fill up all the fields2'
+              return view('student-edit', [
+                'result' => 'Please fill up the fields',
+                'student_info' => StudentController::getStudentInfo($request->input('user_no'))
             ]); 
 
         }else if(!$request->has('password') || empty($request->input('password'))) {
 
-             return view('admin', [
-                'page' => 'student-edit',
-                'result' => 'Please fill up all the fields3'
+             return view('student-edit', [
+                'result' => 'Please fill up the fields',
+                'student_info' => StudentController::getStudentInfo($request->input('user_no'))
              ]); 
 
         }else if(!$request->has('first_name') || empty($request->input('first_name'))) {
 
-             return view('admin', [
-                'page' => 'student-edit',
-                'result' => 'Please fill up all the fields4'
+             return view('student-edit', [
+                'result' => 'Please fill up the fields',
+                'student_info' => StudentController::getStudentInfo($request->input('user_no'))
              ]); 
 
         }else if(!$request->has('last_name') || empty($request->input('last_name'))) {
 
-             return view('admin', [
-                'page' => 'student-edit',
-                'result' => 'Please fill up all the fields5'
+             return view('student-edit', [
+                'result' => 'Please fill up the fields',
+                'student_info' => StudentController::getStudentInfo($request->input('user_no'))
              ]); 
         
         }
         
         if($this->checkIfUsernameExist($request->input('user_name'), $request->input('user_no'))){
             
-            return view('admin', [
-             'page' => 'student-edit',
-             'result' => 'Username Already Exist',
-             'student_info' => StudentController::getStudentInfo($request->input('id'))
+            return view('student-edit', [
+                'result' => 'Username Already Exist',
+                'student_info' => StudentController::getStudentInfo($request->input('id'))
             ]);
 
         }
 
         if($this->checkIfStudentIdExist($request->input('student_id'), $request->input('user_no'))){
 
-           return view('admin', [
-               'page' => 'student-edit',
+           return view('student-edit', [
                'result' => 'Student ID Already Exist',
                'student_info' => StudentController::getStudentInfo($request->input('id'))
            ]);
@@ -162,8 +152,7 @@ class StudentController extends Controller
          'student_id' => $request->input('student_id')
         ]);
 
-        return view('admin', [
-            'page' => 'student-edit',
+        return view('student-edit', [
             'result' => 'Saved',
             'student_info' => StudentController::getStudentInfo($request->input('user_no'))
         ]);
@@ -179,7 +168,7 @@ class StudentController extends Controller
         $student->where('user_no', '=', request('id'))->delete();
         $plotted_classes->where('user_no', '=', request('id'))->delete();
 
-        return redirect()->route('admin', ['page' => 'student']);
+        return redirect()->route('student-list');
     }
 
     public function createWithCSV(Request $request){
@@ -191,8 +180,7 @@ class StudentController extends Controller
             for($i = 0; $i < $count; $i++){
                 if(empty($csvValues[$i])){
       
-                    return redirect()->route('admin', [
-                        'page' => 'student',
+                    return redirect()->route('student-list', [
                         'result' => 'One of the values is missing, please check the file'
                     ]);
 
@@ -200,15 +188,13 @@ class StudentController extends Controller
             }
 
             if($this->checkIfUsernameExist($csvValues[1])){
-                return redirect()->route('admin', [
-                    'page' => 'student',
+                return redirect()->route('student-list', [
                     'result' => 'Username Already exists'
                 ]);
             }
     
             if($this->checkIfStudentIdExist($csvValues[0])){
-                return redirect()->route('admin', [
-                    'page' => 'student',
+                return redirect()->route('student-list', [
                     'result' => 'Student ID Already exists'
                  ]);
             }
@@ -227,15 +213,13 @@ class StudentController extends Controller
             $student->user_no = $user->user_no;
             $student->save();
 
-            return redirect()->route('admin', [
-                'page' => 'student',
+            return redirect()->route('student-list', [
                 'result' => 'User Saved'
             ]);
 
         }else{
             
-            return redirect()->route('admin', [
-                'page' => 'student',
+            return redirect()->route('student-list', [
                 'result' => 'File does not exist'
             ]);
 
@@ -319,8 +303,7 @@ class StudentController extends Controller
 
             }
 
-           return view('admin', [
-              'page' => 'student',
+           return view('student', [
               'result' => $result,
               'teacher_options' => $teacher_select_options,
               'class_options' => $class_select_options,
@@ -332,8 +315,7 @@ class StudentController extends Controller
         $student_list = $student->select('student.user_no','student.student_id', 'user.first_name as student_first_name', 'user.last_name as student_last_name')
             ->join('user as user', 'user.user_no', '=', 'student.user_no')->paginate(3);
 
-        return view('admin', [
-           'page' => 'student',
+        return view('student', [
            'result' => $result,
            'teacher_options' => $teacher_select_options,
            'class_options' => $class_select_options,
