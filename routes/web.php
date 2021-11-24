@@ -186,6 +186,42 @@ Route::get('/admin/teacher', function () {
 
 })->name('teacher-list');
 
+Route::get('/admin/class/create', function(){
+    
+    if(!session()->has('user_no') && !session()->get('user_type') == 0){
+
+        return redirect()->route('login', [
+            'result' => ''
+        ]);
+
+    }else{
+
+        return view('class-create', [
+            'result' => ''
+        ]);
+
+    }
+
+});
+
+Route::get('/admin/class', function(){
+
+    if(!session()->has('user_no') && !session()->get('user_type') == 0){
+
+         return redirect()->route('login', [
+             'result' => ''
+         ]);
+
+    }else{
+     
+        return view('class', [
+            'class_table_results' => ClassesController::show()
+        ]);
+
+    }
+
+})->name('class-list');
+
 Route::post('/admin/student/search', function(){
     list($teacher_names, $teacher_ids) = TeacherController::getNumAndName();
     $teacher_count = count($teacher_names);
@@ -226,6 +262,8 @@ Route::post('/admin/student/search', 'StudentController@show');
 Route::post('/admin/teacher/create', 'TeacherController@create');
 Route::post('/admin/teacher/edit', 'TeacherController@edit');
 Route::get('/admin/teacher/delete', 'TeacherController@delete');
+
+Route::post('/admin/class/create', 'ClassesController@create');
 
 /*Route::get('/test', function () {
 

@@ -41,7 +41,7 @@
 
                             <li><a href="/admin/student">Students</a></li>
                             <li><a href="/admin/teacher">Teachers</a></li>
-                            <li><a href="/admin/classes">Classes</a></li>
+                            <li><a href="/admin/class">Classes</a></li>
                             <li><a href="/admin/plot_classes">Plot Classes</a></li>
                             <li><a href="/admin/plot_teachers">Plot Teachers</a></li>
 
