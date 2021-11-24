@@ -21,7 +21,7 @@
              @foreach($class_table_results as $classes)
                  <tr>
                      <td>{{$classes->classes_name}}</td>
-                     <td><a href="/admin/student/edit?id={{$classes->classes_no}}">Edit</a> | <a href="/admin/student/delete?id={{$classes->classes_no}}">Delete</a></td>
+                     <td><a href="/admin/class/edit?id={{$classes->classes_no}}">Edit</a> | <a href="/admin/class/delete?id={{$classes->classes_no}}">Delete</a></td>
                  </tr>
              @endforeach
         </tbody>

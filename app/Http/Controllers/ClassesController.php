@@ -45,6 +45,39 @@ class ClassesController extends Controller
 
     }
 
+    public function edit(Request $request){
+        
+        if(!$request->has('classes_name') || empty($request->input('classes_name'))){
+               
+            return view('class-edit', [
+                'result' => 'Please fill up class name',
+                'class_info' => $this->getClassInfo($request->input('classes_no'))
+            ]);
+
+        }
+
+        if($this->checkIfClassNameExist($request->input('classes_name'), $request->input('classes_no'))){
+
+            return view('class-edit', [
+                'result' => 'Class name already exists',
+                'class_info' => $this->getClassInfo($request->input('classes_no'))
+            ]);
+
+        }
+
+        $class = new Classes;
+        $class->where('classes_no', '=', $request->input('classes_no'))
+            ->update([
+                'classes_name' => $request->input('classes_name')
+            ]);
+      
+        return view('class-edit', [
+            'result' => 'Class Name Updated',
+            'class_info' => $this->getClassInfo($request->input('classes_no'))
+        ]);
+
+    }
+
     public function getNumAndName(){
 
         $classes = Classes::all();
@@ -75,7 +108,7 @@ class ClassesController extends Controller
 
         }else{
 
-            $get_duplicates = $class->where('classes_name', '=', $className)->where('classes_no', '!=', $id)->first();
+            $get_duplicates = $class->where('classes_name', '=', $className)->where('classes_no', '!=', $id)->get();
 
             if($get_duplicates->count() > 0){
                 return true;
@@ -85,5 +118,11 @@ class ClassesController extends Controller
 
         return false;
 
+    }
+
+    public function getClassInfo($id){
+        $class = new Classes;
+
+        return $class->where('classes_no', $id)->first();
     }
 }

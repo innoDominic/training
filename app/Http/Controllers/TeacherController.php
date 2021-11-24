@@ -60,21 +60,21 @@ class TeacherController extends Controller
         if( $empty_field !== null){
             return view('teacher-edit', [
                 'result' => 'Please fill up ' . $empty_field,
-                'teacher_info' => StudentController::getStudentInfo($request->input('user_no'))
+                'teacher_info' => $this->getTeacherInfo($request->input('user_no'))
             ]);
         }
 
         if($this->checkIfUsernameExist($request->input('user_name'), $request->input('user_no'))){
             return view('teacher-edit', [
                 'result' => 'Username Already exists',
-                'teacher_info' => TeacherController::getTeacherInfo($request->input('user_no'))
+                'teacher_info' => $this->getTeacherInfo($request->input('user_no'))
             ]);
         }
 
         if($this->checkIfTeacherIdExist($request->input('teacher_id'), $request->input('user_no'))){
             return view('teacher-edit', [
                 'result' => 'Student ID Already exists',
-                'teacher_info' => TeacherController::getTeacherInfo($request->input('user_no'))
+                'teacher_info' => $this->getTeacherInfo($request->input('user_no'))
             ]);
         }
 
@@ -98,7 +98,7 @@ class TeacherController extends Controller
 
         return view('teacher-edit', [
             'result' => 'Saved',
-            'teacher_info' => TeacherController::getTeacherInfo($request->input('user_no'))
+            'teacher_info' => $this->getTeacherInfo($request->input('user_no'))
         ]);
 
     }

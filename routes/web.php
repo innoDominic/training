@@ -204,6 +204,25 @@ Route::get('/admin/class/create', function(){
 
 });
 
+Route::get('/admin/class/edit', function(){
+    
+    if(!session()->has('user_no') && !session()->get('user_type') == 0){
+
+        return redirect()->route('login', [
+            'result' => ''
+        ]);
+
+    }else{
+
+        return view('class-edit', [
+            'result' => '',
+            'class_info' => ClassesController::getClassInfo(request('id'))
+        ]);
+
+    }
+
+});
+
 Route::get('/admin/class', function(){
 
     if(!session()->has('user_no') && !session()->get('user_type') == 0){
@@ -264,6 +283,7 @@ Route::post('/admin/teacher/edit', 'TeacherController@edit');
 Route::get('/admin/teacher/delete', 'TeacherController@delete');
 
 Route::post('/admin/class/create', 'ClassesController@create');
+Route::post('/admin/class/edit', 'ClassesController@edit');
 
 /*Route::get('/test', function () {
 

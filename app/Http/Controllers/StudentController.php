@@ -61,7 +61,7 @@ class StudentController extends Controller
         if( $empty_field !== null){
             return view('student-edit', [
                 'result' => 'Please fill up ' . $empty_field,
-                'student_info' => StudentController::getStudentInfo($request->input('user_no'))
+                'student_info' => $this->getStudentInfo($request->input('user_no'))
             ]);
         }
 
@@ -96,7 +96,7 @@ class StudentController extends Controller
 
         return view('student-edit', [
             'result' => 'Saved',
-            'student_info' => StudentController::getStudentInfo($request->input('user_no'))
+            'student_info' => $this->getStudentInfo($request->input('user_no'))
         ]);
 
     }
@@ -242,7 +242,7 @@ class StudentController extends Controller
             empty($request->input('srchStudentByClass')) || 
             empty($request->input('srchStudentByTeacher'))) {
 
-             
+
 
             }else if(!empty($request->input('srchStudentByName')) || 
             empty($request->input('srchStudentByClass')) || 
