@@ -11,41 +11,17 @@ use App\Models\PlottedClasses;
 
 class StudentController extends Controller
 {
+
     public function create(Request $request){
      
         #Check if Request is empty
-        if(!$request->has('student_id') || empty($request->input('student_id'))) {
-
-           return view('student-create', [
-               'result' => 'Please fill up all the fields1'
-           ]);  
-
-        }else if(!$request->has('user_name') || empty($request->input('user_name'))) {
-
-              return view('student-create', [
-                'result' => 'Please fill up all the fields2'
-            ]); 
-
-        }else if(!$request->has('password') || empty($request->input('password'))) {
-
-             return view('student-create', [
-                'result' => 'Please fill up all the fields3'
-             ]); 
-
-        }else if(!$request->has('first_name') || empty($request->input('first_name'))) {
-
-             return view('student-create', [
-                'result' => 'Please fill up all the fields4'
-             ]); 
-
-        }else if(!$request->has('last_name') || empty($request->input('last_name'))) {
-
-             return view('student-create', [
-                'result' => 'Please fill up all the fields5'
-             ]); 
-        
+        $empty_field = $this->checkValuesIfEmpty($request);
+        if( $empty_field !== null){
+            return view('student-create', [
+                'result' => 'Please fill up ' . $empty_field
+            ]);
         }
-        
+
         if($this->checkIfUsernameExist($request->input('user_name'))){
             return view('student-create', [
                 'result' => 'Username Already exists'
@@ -53,9 +29,9 @@ class StudentController extends Controller
         }
 
         if($this->checkIfStudentIdExist($request->input('student_id'))){
-           return view('student-create', [
-              'result' => 'Student ID Already exists'
-           ]);
+            return view('student-create', [
+                'result' => 'Student ID Already exists'
+             ]);
         }
 
         $user = new User;
@@ -81,58 +57,24 @@ class StudentController extends Controller
     public function edit(Request $request){
      
         #Check if Request is empty
-        if(!$request->has('student_id') || empty($request->input('student_id'))) {
-
-           return view('student-edit', [
-               'result' => 'Please fill up the fields',
-               'student_info' => StudentController::getStudentInfo($request->input('user_no'))
-           ]);  
-
-        }else if(!$request->has('user_name') || empty($request->input('user_name'))) {
-
-              return view('student-edit', [
-                'result' => 'Please fill up the fields',
-                'student_info' => StudentController::getStudentInfo($request->input('user_no'))
-            ]); 
-
-        }else if(!$request->has('password') || empty($request->input('password'))) {
-
-             return view('student-edit', [
-                'result' => 'Please fill up the fields',
-                'student_info' => StudentController::getStudentInfo($request->input('user_no'))
-             ]); 
-
-        }else if(!$request->has('first_name') || empty($request->input('first_name'))) {
-
-             return view('student-edit', [
-                'result' => 'Please fill up the fields',
-                'student_info' => StudentController::getStudentInfo($request->input('user_no'))
-             ]); 
-
-        }else if(!$request->has('last_name') || empty($request->input('last_name'))) {
-
-             return view('student-edit', [
-                'result' => 'Please fill up the fields',
-                'student_info' => StudentController::getStudentInfo($request->input('user_no'))
-             ]); 
-        
-        }
-        
-        if($this->checkIfUsernameExist($request->input('user_name'), $request->input('user_no'))){
-            
+        $empty_field = $this->checkValuesIfEmpty($request);
+        if( $empty_field !== null){
             return view('student-edit', [
-                'result' => 'Username Already Exist',
-                'student_info' => StudentController::getStudentInfo($request->input('id'))
+                'result' => 'Please fill up ' . $empty_field,
+                'student_info' => StudentController::getStudentInfo($request->input('user_no'))
             ]);
+        }
 
+        if($this->checkIfUsernameExist($request->input('user_name'), $request->input('user_no'))){
+            return view('student-edit', [
+                'result' => 'Username Already exists'
+            ]);
         }
 
         if($this->checkIfStudentIdExist($request->input('student_id'), $request->input('user_no'))){
-
-           return view('student-edit', [
-               'result' => 'Student ID Already Exist',
-               'student_info' => StudentController::getStudentInfo($request->input('id'))
-           ]);
+            return view('student-edit', [
+                'result' => 'Student ID Already exists'
+             ]);
         }
 
         $user = new User;
@@ -275,6 +217,19 @@ class StudentController extends Controller
         return false;
     }
 
+    public function checkValuesIfEmpty(Request $request){
+
+        $input_names = ['student_id', 'user_name', 'password', 'first_name', 'last_name'];
+
+        foreach($input_names as $name){
+            if( !$request->has($name) || empty($request->input($name)) ){
+                return $name;
+            }
+        }
+
+        return null;
+    }
+
     public function show($request, $teacher_select_options, $class_select_options, $result){
         $student = new Student;
 
@@ -287,13 +242,7 @@ class StudentController extends Controller
             empty($request->input('srchStudentByClass')) || 
             empty($request->input('srchStudentByTeacher'))) {
 
-                $student_list = $student->select('student.student_id', 'userA.first_name as student_first_name', 'userA.last_name as student_last_name', 'classes.classes_name', 'userB.first_name as teacher_first_name', 'userB.last_name as teacher_last_name')
-                ->join('user as userA', 'userA.user_no', '=', 'student.user_no')
-                   ->join('plotted_classes as plot_classA', 'plot_classA.user_no', '=', 'student.user_no')
-                   ->join('classes', 'classes.classes_no', '=', 'plot_classA.classes_no')
-                   ->join('plotted_classes as plot_classB', 'plot_classB.classes_no', '=', 'plot_classA.classes_no')
-                   ->join('teacher', 'teacher.user_no', '=', 'plot_classB.user_no')
-                   ->join('user as userB', 'userB.user_no', '=', 'teacher.user_no')->paginate(3);
+             
 
             }else if(!empty($request->input('srchStudentByName')) || 
             empty($request->input('srchStudentByClass')) || 

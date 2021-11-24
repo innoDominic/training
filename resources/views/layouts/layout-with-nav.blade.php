@@ -21,9 +21,11 @@
 
             .paginate-nav div{ display: inline-block !important; padding: 0 20px; }
 
-            .paginate-nav div span{
-                
-            }
+            tr th, tr td{
+               border: solid black 1px;
+               border-collapse: collapse;
+               text-align: center;
+           }
         </style>
     </head>
     <body class="antialiased">
