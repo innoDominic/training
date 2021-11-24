@@ -78,6 +78,14 @@ class ClassesController extends Controller
 
     }
 
+    public function delete(Request $request){
+        $class = new Classes;
+
+        $class->where('classes_no', '=', request('id'))->delete();
+
+        return redirect()->route('class-list');
+    }
+
     public function getNumAndName(){
 
         $classes = Classes::all();

@@ -202,7 +202,7 @@ Route::get('/admin/class/create', function(){
 
     }
 
-});
+})->name('class-create');
 
 Route::get('/admin/class/edit', function(){
     
@@ -221,7 +221,7 @@ Route::get('/admin/class/edit', function(){
 
     }
 
-});
+})->name('class-edit');
 
 Route::get('/admin/class', function(){
 
@@ -284,6 +284,7 @@ Route::get('/admin/teacher/delete', 'TeacherController@delete');
 
 Route::post('/admin/class/create', 'ClassesController@create');
 Route::post('/admin/class/edit', 'ClassesController@edit');
+Route::get('/admin/class/delete', 'ClassesController@delete');
 
 /*Route::get('/test', function () {
 
