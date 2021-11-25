@@ -16,7 +16,7 @@
 
 <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center;">
     
-     <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/student/search">
+     <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/teacher">
          <div style="width:50%;">
              <label>
                  Name:
@@ -28,7 +28,9 @@
                  Class:
                  <select type="text" class="srchStudntByClass" name="srchStudntByClass" style="border: solid 1px black;">
                      <option value ="">Classes</option>
-                     {!! $class_options !!}
+                     @foreach($class_options as $class)
+                         <option value="{{$class->classes_no}}">{{$class->classes_name}}</option>
+                     @endforeach
                  </select>
              </label>
          </div><br />

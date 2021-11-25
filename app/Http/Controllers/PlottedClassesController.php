@@ -22,28 +22,25 @@ class PlottedClassesController extends Controller
 
     public function getStudentsExcludedInClass($included_students){
         
-        $plotted_classes = new PlottedClasses;
         $student = new Student;
 
-        $student_list = $student->select('user.first_name', 'user.last_name', 'student.student_id')
+        return $student->select('user.user_no', 'user.first_name', 'user.last_name', 'student.student_id')
             ->join('user', 'user.user_no', '=', 'student.user_no')
             ->whereNotIn('user.user_no', $included_students)->get();
 
-        /*$student_list = $plotted_classes->select('user.first_name', 'user.last_name', 'student.student_id')
-            ->leftJoin('user', 'user.user_no', '=', 'plotted_classes.user_no')
-            ->leftJoin('student', 'student.user_no', '=', 'user.user_no')
-            ->where('user.user_type', 2)
-            ->where('plotted_classes.classes_no', '!=', $class_no)->get();*/
+    }
 
-        $student_name_list = [];
-        $student_id_list = [];
+    public function plotStudent(Request $request){
+        
+        $plot_class = new PlottedClasses;
 
-        foreach($student_list as $student){
-            $student_name_list [] = '(' . $student->student_id . ') ' . $student->last_name . ', ' .  $student->first_name;
-            $student_id_list [] = $student->user_no; 
-        }
+        $plot_class->classes_no = $request->input('selected_class_to_plot');
+        $plot_class->user_no = $request->input('user_no');
+        $plot_class->save();
 
-        return array($student_name_list, $student_id_list);
+        return redirect()->route('plot-class-list', [
+            'selected_class' => $request->input('selected_class_to_plot')
+        ]);
 
     }
 }

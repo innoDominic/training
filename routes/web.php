@@ -86,25 +86,8 @@ Route::get('/admin/student', function () {
 
     }else{
 
-        list($teacher_names, $teacher_ids) = TeacherController::getNumAndName();
-        $teacher_count = count($teacher_names);
-        $teacher_select_options = "";
-
-        for($i = 0; $i < $teacher_count; $i++){
-            $teacher_select_options .= "
-                <option value='". $teacher_ids[$i] ."'>". $teacher_names[$i] ."</option>
-            ";
-        }
-
-        list($class_names, $class_ids) = ClassesController::getNumAndName();
-        $class_count = count($class_names);
-        $class_select_options = "";
-
-        for($i = 0; $i < $class_count; $i++){
-            $class_select_options .= "
-                <option value='". $class_ids[$i] ."'>". $class_names[$i] ."</option>
-            ";
-        }
+        $teacher_options = TeacherController::getNumAndName();
+        $class_options = ClassesController::getNumAndName();
 
         $result = '';
 
@@ -112,11 +95,37 @@ Route::get('/admin/student', function () {
             $result = request('result');
         }
 
-        return StudentController::show(request(), $teacher_select_options, $class_select_options, $result);
+        return view('student', [
+            'result' => $result,
+            'teacher_options' => $teacher_options,
+            'class_options' => $class_options,
+            'student_table_results' => StudentController::show(request())
+         ]);
 
-     }
+    }
 
 })->name('student-list');
+
+Route::post('/admin/student', function(){
+ 
+    $teacher_options = TeacherController::getNumAndName();
+
+    $class_options = ClassesController::getNumAndName();
+
+    $result = '';
+
+    if(request()->has('result')){
+        $result = request('result');
+    }
+
+    return view('student', [
+        'result' => $result,
+        'teacher_options' => $teacher_options,
+        'class_options' => $class_options,
+        'student_table_results' => StudentController::show(request())
+     ]);
+
+});
 
 Route::get('/admin/teacher/create', function () {
 
@@ -165,15 +174,7 @@ Route::get('/admin/teacher', function () {
 
     }else{
 
-        list($class_names, $class_ids) = ClassesController::getNumAndName();
-        $class_count = count($class_names);
-        $class_select_options = "";
-
-        for($i = 0; $i < $class_count; $i++){
-            $class_select_options .= "
-                <option value='". $class_ids[$i] ."'>". $class_names[$i] ."</option>
-            ";
-        }
+        $class_options = ClassesController::getNumAndName();
 
         $result = '';
 
@@ -181,7 +182,11 @@ Route::get('/admin/teacher', function () {
             $result = request('result');
         }
 
-        return TeacherController::show(request(), $class_select_options, $result);
+        return view('teacher', [
+            'result' => $result,
+            'class_options' => $class_options,
+            'teacher_table_results' => TeacherController::show(request())
+        ]);
 
     }
 
@@ -251,38 +256,25 @@ Route::get('/admin/plot-class', function(){
         ]);
 
     }else{
-    
-        list($class_names, $class_ids) = ClassesController::getNumAndName();
-        $class_count = count($class_names);
-        $class_select_options = "";
 
-        for($i = 0; $i < $class_count; $i++){
-            $class_select_options .= "
-                <option value='". $class_ids[$i] ."'>". $class_names[$i] ."</option>
-            ";
+        $class_options = ClassesController::getNumAndName();
+
+        $selected_class = $class_options[0]->classes_no;
+        if(request()->has('selected_class')){
+            $selected_class = request('selected_class');
         }
 
-        $included_students = PlottedClassesController::getStudentsIncludedInClass($class_ids[0]);
+        $included_students = PlottedClassesController::getStudentsIncludedInClass($selected_class);
 
         $included_students_id = [];
         foreach($included_students as $student){
             $included_students_id [] = $student->user_no;
         }
 
-        list($student_names, $student_ids) = PlottedClassesController::getStudentsExcludedInClass($included_students_id);
-        $student_count = count($student_names);
-        $student_select_options = "";
-
-        for($i = 0; $i < $student_count; $i++){
-            $student_select_options .= "
-                <option value='". $student_ids[$i] ."'>". $student_names[$i] ."</option>
-            ";
-        }
-
         return view('plot-class', [
-            'class_options' => $class_select_options,
-            'selected_class' => $class_ids[0],
-            'student_options' => $student_select_options,
+            'class_options' => $class_options,
+            'selected_class' => $selected_class,
+            'student_options' => PlottedClassesController::getStudentsExcludedInClass($included_students_id),
             'student_table_results' => $included_students
         ]);
 
@@ -292,15 +284,7 @@ Route::get('/admin/plot-class', function(){
 
 Route::post('/admin/plot-class', function(){
 
-    list($class_names, $class_ids) = ClassesController::getNumAndName();
-    $class_count = count($class_names);
-    $class_select_options = "";
-
-    for($i = 0; $i < $class_count; $i++){
-        $class_select_options .= "
-            <option value='". $class_ids[$i] ."'>". $class_names[$i] ."</option>
-        ";
-    }
+    $class_options = ClassesController::getNumAndName();
 
     $included_students = PlottedClassesController::getStudentsIncludedInClass(request('selected_class'));
 
@@ -309,53 +293,13 @@ Route::post('/admin/plot-class', function(){
         $included_students_id [] = $student->user_no;
     }
 
-    list($student_names, $student_ids) = PlottedClassesController::getStudentsExcludedInClass($included_students);
-    $student_count = count($student_names);
-    $student_select_options = "";
-
-    for($i = 0; $i < $student_count; $i++){
-        $student_select_options .= "
-            <option value='". $student_ids[$i] ."'>". $student_names[$i] ."</option>
-        ";
-    }
-
     return view('plot-class', [
-        'class_options' => $class_select_options,
+        'class_options' => $class_options,
         'selected_class' => request('selected_class'),
-        'student_options' => $student_select_options,
+        'student_options' => PlottedClassesController::getStudentsExcludedInClass($included_students_id),
         'student_table_results' => $included_students
     ]);
 
-});
-
-Route::post('/admin/student/search', function(){
-    list($teacher_names, $teacher_ids) = TeacherController::getNumAndName();
-    $teacher_count = count($teacher_names);
-    $teacher_select_options = "";
-
-    for($i = 0; $i < $teacher_count; $i++){
-        $teacher_select_options .= "
-            <option value='". $teacher_ids[$i] ."'>". $teacher_names[$i] ."</option>
-        ";
-    }
-
-    list($class_names, $class_ids) = ClassesController::getNumAndName();
-    $class_count = count($teacher_names);
-    $class_select_options = "";
-
-    for($i = 0; $i < $class_count; $i++){
-        $class_select_options .= "
-            <option value='". $class_ids[$i] ."'>". $class_names[$i] ."</option>
-        ";
-    }
-
-    $result = '';
-
-    if(request()->has('result')){
-        $result = request('result');
-    }
-
-    return StudentController::show(request(), $teacher_select_options, $class_select_options, $result);
 });
 
 Route::post('/', 'LoginController@authenticateUser');
@@ -372,6 +316,8 @@ Route::get('/admin/teacher/delete', 'TeacherController@delete');
 Route::post('/admin/class/create', 'ClassesController@create');
 Route::post('/admin/class/edit', 'ClassesController@edit');
 Route::get('/admin/class/delete', 'ClassesController@delete');
+
+Route::post('/admin/plot-class/plot-student', 'PlottedClassesController@plotStudent');
 
 /*Route::get('/test', function () {
 

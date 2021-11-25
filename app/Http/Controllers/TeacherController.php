@@ -103,17 +103,11 @@ class TeacherController extends Controller
 
     }
 
-    public function show(Request $request, $class_options, $result){
+    public function show(Request $request){
         
         $teacher = new Teacher;
-        $teacher_list = $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id')
+        return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id')
             ->join('user', 'user.user_no', '=', 'teacher.user_no')->paginate(3);
-
-        return view('teacher', [
-            'result' => $result,
-            'class_options' => $class_options,
-            'teacher_table_results' => $teacher_list
-        ]);
 
     }
 
@@ -192,17 +186,7 @@ class TeacherController extends Controller
 
     public function getNumAndName(){
 
-        $teachers = Teacher::join('user', 'user.user_no', '=', 'teacher.user_no')->get();
-
-        $teacher_name_list = [];
-        $teacher_id_list = [];
-
-        foreach($teachers as $teacher){
-            $teacher_name_list [] = $teacher->first_name . ' ' .  $teacher->last_name;
-            $teacher_id_list [] = $teacher->user_no; 
-        }
-
-        return array($teacher_name_list, $teacher_id_list);
+        return Teacher::join('user', 'user.user_no', '=', 'teacher.user_no')->get();
 
     }
 

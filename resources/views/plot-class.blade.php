@@ -14,7 +14,9 @@
              <label>
                  Select Class:
                  <select type="text" class="selected_class" name="selected_class" style="border: solid 1px black;">
-                     {!! $class_options !!}
+                     @foreach($class_options as $class)
+                         <option value="{{$class->classes_no}}">{{$class->classes_name}}</option>
+                     @endforeach
                  </select>
                  @csrf
              </label>     
@@ -58,8 +60,10 @@
          <div style="width:50%;">
              <label>
                  Add Student:
-                 <select type="text" class="student_id" name="student_id" style="border: solid 1px black;">
-                     {!! $student_options !!}
+                 <select type="text" class="user_no" name="user_no" style="border: solid 1px black;">
+                     @foreach($student_options as $student)
+                         <option value="{{$student->user_no}}">({{$student->student_id}}) {{$student->last_name}}, {{$student->first_name}}</option>
+                     @endforeach
                  </select>
                  @csrf
              </label>

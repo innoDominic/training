@@ -18,11 +18,12 @@
 
 <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center;">
     
-     <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/student/search">
+     <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/student">
          <div style="width:33%;">
              <label>
                  Name:
                  <input type="text" class="srchStudntByName" name="srchStudntByName" style="border: solid 1px black;" />
+                 @csrf
              </label>     
          </div>
          <div style="width:33%;">
@@ -30,8 +31,11 @@
                  Class:
                  <select type="text" class="srchStudntByClass" name="srchStudntByClass" style="border: solid 1px black;">
                      <option value ="">Classes</option>
-                     {!! $class_options !!}
+                     @foreach($class_options as $class)
+                         <option value="{{$class->classes_no}}">{{$class->classes_name}}</option>
+                     @endforeach
                  </select>
+                 @csrf
              </label>
          </div>
          <div style="width:33%;">
@@ -39,11 +43,14 @@
                  Teacher:
                  <select type="text" class="srchStudntByTeacher" name="srchStudntByTeacher" style="border: solid 1px black;">
                      <option value ="">Teacher</option>
-                     {!! $teacher_options !!}
+                     @foreach($teacher_options as $teacher)
+                         <option value="{{$teacher->user_no}}">{{$teacher->teacher_title}} {{$teacher->first_name}} {{$teacher->last_name}}</option>
+                     @endforeach
                  </select>
+                 @csrf
              </label>
          </div><br />
-         <div style="width: 100%; display: flex; flex-direction: column; justify-content: flex-end;">
+         <div style="width: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding-top:20px;">
              <button style="max-width: 200px; margin: 0 auto; max-height: 50px; padding: 10px;">Search</button>
          </div>
      </form>

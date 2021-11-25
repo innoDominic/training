@@ -230,25 +230,9 @@ class StudentController extends Controller
         return null;
     }
 
-    /*public function getNumAndName(){
+    public function show(Request $request){
 
-        $teachers = Student::join('user', 'user.user_no', '=', 'student.user_no')->get();
-
-        $student_name_list = [];
-        $student_id_list = [];
-
-        foreach($students as $student){
-            $student_name_list [] = $student->first_name . ' ' .  $student->last_name;
-            $student_id_list [] = $student->user_no; 
-        }
-
-        return array($student_name_list, $student_id_list);
-
-    }*/
-
-    public function show($request, $teacher_select_options, $class_select_options, $result){
         $student = new Student;
-
 
         if($request->has('srchStudentByName') && 
         $request->has('srchStudentByClass') && 
@@ -268,24 +252,13 @@ class StudentController extends Controller
 
             }
 
-           return view('student', [
-              'result' => $result,
-              'teacher_options' => $teacher_select_options,
-              'class_options' => $class_select_options,
-              'student_table_results' => $student_list
-           ]);
+            return $student->select('student.user_no','student.student_id', 'user.first_name as student_first_name', 'user.last_name as student_last_name')
+            ->join('user as user', 'user.user_no', '=', 'student.user_no')->paginate(3);
 
         }
 
-        $student_list = $student->select('student.user_no','student.student_id', 'user.first_name as student_first_name', 'user.last_name as student_last_name')
+        return $student->select('student.user_no','student.student_id', 'user.first_name as student_first_name', 'user.last_name as student_last_name')
             ->join('user as user', 'user.user_no', '=', 'student.user_no')->paginate(3);
-
-        return view('student', [
-           'result' => $result,
-           'teacher_options' => $teacher_select_options,
-           'class_options' => $class_select_options,
-           'student_table_results' => $student_list
-        ]);
     }
 
     public function getStudentInfo($id){
