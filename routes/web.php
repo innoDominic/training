@@ -318,6 +318,7 @@ Route::post('/admin/class/edit', 'ClassesController@edit');
 Route::get('/admin/class/delete', 'ClassesController@delete');
 
 Route::post('/admin/plot-class/plot-student', 'PlottedClassesController@plotStudent');
+Route::get('/admin/plot-class/delete', 'PlottedClassesController@deletePlottedClass');
 
 /*Route::get('/test', function () {
 

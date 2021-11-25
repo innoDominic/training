@@ -46,7 +46,7 @@
                  <tr>
                      <td>{{$student->student_id}}</td>
                      <td>{{$student->last_name}} {{$student->first_name}}</td>
-                     <td><a href="/admin/plot-class/delete?id={{$student->user_no}}">Remove</a></td>
+                     <td><a href="/admin/plot-class/delete?id={{$student->user_no}}&class={{$selected_class}}">Remove</a></td>
                  </tr>
              @endforeach
         </tbody>
@@ -71,7 +71,7 @@
              @csrf 
          </div>
          <div style="width: 50%; display: flex; flex-direction: column; justify-content: flex-end;">
-             <button style="max-width: 200px; margin: 0 auto; max-height: 50px; padding: 10px;">Add</button>
+             <button style="max-width: 200px; margin: 0 auto; max-height: 50px; padding: 10px;" class="addClassBtn">Add</button>
          </div>
      </form>
 
