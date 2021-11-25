@@ -262,9 +262,28 @@ Route::get('/admin/plot-class', function(){
             ";
         }
 
+        $included_students = PlottedClassesController::getStudentsIncludedInClass($class_ids[0]);
+
+        $included_students_id = [];
+        foreach($included_students as $student){
+            $included_students_id [] = $student->user_no;
+        }
+
+        list($student_names, $student_ids) = PlottedClassesController::getStudentsExcludedInClass($included_students_id);
+        $student_count = count($student_names);
+        $student_select_options = "";
+
+        for($i = 0; $i < $student_count; $i++){
+            $student_select_options .= "
+                <option value='". $student_ids[$i] ."'>". $student_names[$i] ."</option>
+            ";
+        }
+
         return view('plot-class', [
             'class_options' => $class_select_options,
-            'student_table_results' => PlottedClassesController::showStudentsByClass($class_ids[0])
+            'selected_class' => $class_ids[0],
+            'student_options' => $student_select_options,
+            'student_table_results' => $included_students
         ]);
 
     }
@@ -283,9 +302,28 @@ Route::post('/admin/plot-class', function(){
         ";
     }
 
+    $included_students = PlottedClassesController::getStudentsIncludedInClass(request('selected_class'));
+
+    $included_students_id = [];
+    foreach($included_students as $student){
+        $included_students_id [] = $student->user_no;
+    }
+
+    list($student_names, $student_ids) = PlottedClassesController::getStudentsExcludedInClass($included_students);
+    $student_count = count($student_names);
+    $student_select_options = "";
+
+    for($i = 0; $i < $student_count; $i++){
+        $student_select_options .= "
+            <option value='". $student_ids[$i] ."'>". $student_names[$i] ."</option>
+        ";
+    }
+
     return view('plot-class', [
         'class_options' => $class_select_options,
-        'student_table_results' => PlottedClassesController::showStudentsByClass(request('srchStudntByClass'))
+        'selected_class' => request('selected_class'),
+        'student_options' => $student_select_options,
+        'student_table_results' => $included_students
     ]);
 
 });

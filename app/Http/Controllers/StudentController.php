@@ -230,6 +230,22 @@ class StudentController extends Controller
         return null;
     }
 
+    /*public function getNumAndName(){
+
+        $teachers = Student::join('user', 'user.user_no', '=', 'student.user_no')->get();
+
+        $student_name_list = [];
+        $student_id_list = [];
+
+        foreach($students as $student){
+            $student_name_list [] = $student->first_name . ' ' .  $student->last_name;
+            $student_id_list [] = $student->user_no; 
+        }
+
+        return array($student_name_list, $student_id_list);
+
+    }*/
+
     public function show($request, $teacher_select_options, $class_select_options, $result){
         $student = new Student;
 

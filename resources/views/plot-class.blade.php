@@ -9,11 +9,11 @@
 </div>
 <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center;">
     
-     <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/plot-class">
+     <form id="searchForm" style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/plot-class">
          <div style="width:50%;">
              <label>
                  Select Class:
-                 <select type="text" class="srchStudntByClass" name="srchStudntByClass" style="border: solid 1px black;">
+                 <select type="text" class="selected_class" name="selected_class" style="border: solid 1px black;">
                      {!! $class_options !!}
                  </select>
                  @csrf
@@ -23,6 +23,10 @@
              <button style="max-width: 200px; margin: 0 auto; max-height: 50px; padding: 10px;">View</button>
          </div>
      </form>
+
+     <script>
+         $(".selected_class").val("{{$selected_class}}");
+     </script>
 
 </div>
 <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center;">
@@ -48,9 +52,9 @@
     
 </div>
 
-<div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center;">
+<div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center; margin-top:40px;">
     
-     <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/plot-class/store">
+     <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/plot-class/plot-student">
          <div style="width:50%;">
              <label>
                  Add Student:
@@ -58,7 +62,9 @@
                      {!! $student_options !!}
                  </select>
                  @csrf
-             </label>     
+             </label>
+             <input type="text" class="selected_class_to_plot" name="selected_class_to_plot" value="{{$selected_class}}" hidden />   
+             @csrf 
          </div>
          <div style="width: 50%; display: flex; flex-direction: column; justify-content: flex-end;">
              <button style="max-width: 200px; margin: 0 auto; max-height: 50px; padding: 10px;">Add</button>
