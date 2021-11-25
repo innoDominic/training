@@ -88,7 +88,7 @@ class ClassesController extends Controller
 
     public function getNumAndName(){
 
-        $classes = Classes::all();
+        $classes = Classes::select('classes_no', 'classes_name')->orderBy('classes_no')->get();
 
         $class_name_list = [];
         $class_id_list = [];

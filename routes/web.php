@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ClassesController;
+use App\Http\Controllers\PlottedClassesController;
 
 Route::get('/', function () {
     if(!session()->has('user_no')){
@@ -240,6 +241,54 @@ Route::get('/admin/class', function(){
     }
 
 })->name('class-list');
+
+Route::get('/admin/plot-class', function(){
+    
+    if(!session()->has('user_no') && !session()->get('user_type') == 0){
+
+        return redirect()->route('login', [
+            'result' => ''
+        ]);
+
+    }else{
+    
+        list($class_names, $class_ids) = ClassesController::getNumAndName();
+        $class_count = count($class_names);
+        $class_select_options = "";
+
+        for($i = 0; $i < $class_count; $i++){
+            $class_select_options .= "
+                <option value='". $class_ids[$i] ."'>". $class_names[$i] ."</option>
+            ";
+        }
+
+        return view('plot-class', [
+            'class_options' => $class_select_options,
+            'student_table_results' => PlottedClassesController::showStudentsByClass($class_ids[0])
+        ]);
+
+    }
+
+})->name('plot-class-list');
+
+Route::post('/admin/plot-class', function(){
+
+    list($class_names, $class_ids) = ClassesController::getNumAndName();
+    $class_count = count($class_names);
+    $class_select_options = "";
+
+    for($i = 0; $i < $class_count; $i++){
+        $class_select_options .= "
+            <option value='". $class_ids[$i] ."'>". $class_names[$i] ."</option>
+        ";
+    }
+
+    return view('plot-class', [
+        'class_options' => $class_select_options,
+        'student_table_results' => PlottedClassesController::showStudentsByClass(request('srchStudntByClass'))
+    ]);
+
+});
 
 Route::post('/admin/student/search', function(){
     list($teacher_names, $teacher_ids) = TeacherController::getNumAndName();

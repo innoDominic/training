@@ -9,6 +9,6 @@ class PlottedClasses extends Model
 {
     use HasFactory;
 
-    protected $table = 'student';
+    protected $table = 'plotted_classes';
     public $timestamps = false;
 }
