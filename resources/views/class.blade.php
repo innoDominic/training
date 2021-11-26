@@ -1,5 +1,3 @@
-<?php use Illuminate\Support\Str; ?>
-
 @extends('layouts.layout-with-nav')
 
 @section('content')

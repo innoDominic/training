@@ -20,8 +20,8 @@ class LoginController extends Controller
 
             $user = User::where('user_name', $request->input('username'))->first();
 
-            $request->session()->put('user_no', $user->user_no);
-            $request->session()->put('user_type', $user->user_type);
+            session()->put('user_no', $user->user_no);
+            session()->put('user_type', $user->user_type);
 
             # 0 : Admin / 1 : Teacher / 2 : Student
             if($user->user_type == 0){

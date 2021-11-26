@@ -1,5 +1,3 @@
-<?php use Illuminate\Support\Str; ?>
-
 @extends('layouts.layout-with-nav')
 
 @section('content')
@@ -45,7 +43,7 @@
              @foreach($student_table_results as $student)
                  <tr>
                      <td>{{$student->student_id}}</td>
-                     <td>{{$student->last_name}} {{$student->first_name}}</td>
+                     <td>{{$student->last_name}}, {{$student->first_name}}</td>
                      <td><a href="/admin/plot-class/delete?id={{$student->user_no}}&class={{$selected_class}}">Remove</a></td>
                  </tr>
              @endforeach
