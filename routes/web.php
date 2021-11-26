@@ -154,7 +154,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function(){
             $selected_class = request('selected_class');
         }
 
-        $included_students = PlottedClassesController::getStudentsIncludedInClass($selected_class);
+        $included_students = PlottedClassesController::getStudentsIncludedByClass($selected_class);
 
         $included_students_id = [];
         foreach($included_students as $student){
@@ -164,7 +164,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function(){
         return view('plot-class', [
             'class_options' => $class_options,
             'selected_class' => $selected_class,
-            'student_options' => PlottedClassesController::getStudentsExcludedInClass($included_students_id),
+            'student_options' => PlottedClassesController::getStudentsExcludedIn($included_students_id),
             'student_table_results' => $included_students
         ]);
 
@@ -174,7 +174,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function(){
 
         $class_options = ClassesController::getNumAndName();
 
-        $included_students = PlottedClassesController::getStudentsIncludedInClass(request('selected_class'));
+        $included_students = PlottedClassesController::getStudentsIncludedByClass(request('selected_class'));
 
         $included_students_id = [];
         foreach($included_students as $student){
@@ -184,8 +184,55 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function(){
         return view('plot-class', [
             'class_options' => $class_options,
             'selected_class' => request('selected_class'),
-            'student_options' => PlottedClassesController::getStudentsExcludedInClass($included_students_id),
+            'student_options' => PlottedClassesController::getStudentsExcludedIn($included_students_id),
             'student_table_results' => $included_students
+        ]);
+
+    });
+
+    Route::get('/plot-teacher', function(){
+
+        $teacher_options = TeacherController::getNumAndName();
+
+        $selected_teacher = $teacher_options[0]->user_no;
+        if(request()->has('selected_teacher')){
+            $selected_teacher = request('selected_teacher');
+        }
+
+        $included_classes = PlottedClassesController::getClassesByTeacher($selected_teacher);
+
+        $included_classes_id = [];
+        foreach($included_classes as $class){
+            $included_classes_id [] = $class->classes_no;
+        }
+
+        return view('plot-teacher', [
+            'teacher_options' => $teacher_options,
+            'selected_teacher' => $selected_teacher,
+            'class_options' => PlottedClassesController::getClassesExludedIn($included_classes_id),
+            'class_table_results' => $included_classes
+        ]);
+
+    })->name('plot-teacher-list');
+
+    Route::post('/plot-teacher', function(){
+
+        $teacher_options = TeacherController::getNumAndName();
+
+        $class_options = ClassesController::getNumAndName();
+
+        $included_classes = PlottedClassesController::getClassesByTeacher(request('selected_teacher'));
+
+        $included_classes_id = [];
+        foreach($included_classes as $class){
+            $included_classes_id [] = $class->classes_no;
+        }
+
+        return view('plot-teacher', [
+            'teacher_options' => $teacher_options,
+            'selected_teacher' => request('selected_teacher'),
+            'class_options' => PlottedClassesController::getStudentsExcludedIn($included_classes_id),
+            'class_table_results' => $included_classes
         ]);
 
     });
@@ -205,7 +252,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function(){
     Route::get('/class/delete', 'ClassesController@delete');
 
     Route::post('/plot-class/plot-student', 'PlottedClassesController@plotStudent');
-    Route::get('/plot-class/delete', 'PlottedClassesController@deletePlottedClass'); 
+    Route::get('/plot-class/delete', 'PlottedClassesController@deletePlottedClass');
 
 });
 

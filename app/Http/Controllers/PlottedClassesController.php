@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\PlottedClasses;
+use App\Models\Classes;
 use App\Models\Student;
 use App\Models\Teacher;
 
 class PlottedClassesController extends Controller
 {
-    public function getStudentsIncludedInClass($class_no){
+    public function getStudentsIncludedByClass($class_no){
         
         $plotted_classes = new PlottedClasses;
 
@@ -21,7 +22,27 @@ class PlottedClassesController extends Controller
 
     }
 
-    public function getStudentsExcludedInClass($included_students){
+    public function getClassesByTeacher($user_no){
+        
+        $plotted_classes = new PlottedClasses;
+
+        return $plotted_classes->select('classes.classes_name', 'classes.classes_no')
+            ->join('classes', 'classes.classes_no', '=', 'plotted_classes.classes_no')
+            ->where('plotted_classes.user_no', $user_no)
+            ->get();
+
+    }
+
+    public function getClassesExludedIn(Array $included_classes){
+
+        $class = new Classes;
+
+        return $class->select('classes_name', 'classes_no')
+        ->whereNotIn('classes_no', $included_classes)->get();
+
+    }
+
+    public function getStudentsExcludedIn(Array $included_students){
         
         $student = new Student;
 
