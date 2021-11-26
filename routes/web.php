@@ -231,7 +231,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function(){
         return view('plot-teacher', [
             'teacher_options' => $teacher_options,
             'selected_teacher' => request('selected_teacher'),
-            'class_options' => PlottedClassesController::getStudentsExcludedIn($included_classes_id),
+            'class_options' => PlottedClassesController::getClassesExludedIn($included_classes_id),
             'class_table_results' => $included_classes
         ]);
 
@@ -251,7 +251,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function(){
     Route::post('/class/edit', 'ClassesController@edit');
     Route::get('/class/delete', 'ClassesController@delete');
 
-    Route::post('/plot-class/plot-student', 'PlottedClassesController@plotStudent');
+    Route::post('/plot-class/plot-class-student', 'PlottedClassesController@plotStudentToClass');
+    Route::post('/plot-teacher/plot-class-teacher', 'PlottedClassesController@plotClassToTeacher');
     Route::get('/plot-class/delete', 'PlottedClassesController@deletePlottedClass');
 
 });

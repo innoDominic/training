@@ -52,7 +52,7 @@ class PlottedClassesController extends Controller
 
     }
 
-    public function plotStudent(Request $request){
+    public function plotStudentToClass(Request $request){
         
         $plot_class = new PlottedClasses;
 
@@ -62,6 +62,20 @@ class PlottedClassesController extends Controller
 
         return redirect()->route('plot-class-list', [
             'selected_class' => $request->input('selected_class_to_plot')
+        ]);
+
+    }
+
+    public function plotClassToTeacher(Request $request){
+    
+        $plot_class = new PlottedClasses;
+
+        $plot_class->classes_no = $request->input('class_no');
+        $plot_class->user_no = $request->input('selected_teacher_to_plot');
+        $plot_class->save();
+
+        return redirect()->route('plot-teacher-list', [
+            'selected_teacher' => $request->input('selected_teacher_to_plot')
         ]);
 
     }

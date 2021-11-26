@@ -52,11 +52,11 @@
 
 <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center; margin-top:40px;">
     
-     <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/plot-class/plot-student">
+     <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/plot-teacher/plot-class-teacher">
          <div style="width:50%;">
              <label>
                  Add Class:
-                 <select type="text" class="user_no" name="user_no" style="border: solid 1px black;">
+                 <select type="text" class="class_no" name="class_no" style="border: solid 1px black;">
                      @foreach($class_options as $class)
                          <option value="{{$class->classes_no}}">{{$class->classes_name}}</option>
                      @endforeach
