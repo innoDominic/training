@@ -42,7 +42,7 @@
              @foreach($class_table_results as $class)
                  <tr>
                      <td>{{$class->classes_name}}</td>
-                     <td><a href="/admin/plot-teacher/delete?id={{$class->classes_no}}">Remove</a></td>
+                     <td><a href="/admin/plot-teacher/delete?id={{$selected_teacher}}&class={{$class->classes_no}}">Remove</a></td>
                  </tr>
              @endforeach
         </tbody>

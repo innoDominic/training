@@ -254,6 +254,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function(){
     Route::post('/plot-class/plot-class-student', 'PlottedClassesController@plotStudentToClass');
     Route::post('/plot-teacher/plot-class-teacher', 'PlottedClassesController@plotClassToTeacher');
     Route::get('/plot-class/delete', 'PlottedClassesController@deletePlottedClass');
+    Route::get('/plot-teacher/delete', 'PlottedClassesController@deletePlottedTeacher');
 
 });
 
