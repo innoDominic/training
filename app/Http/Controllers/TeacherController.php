@@ -106,8 +106,53 @@ class TeacherController extends Controller
     public function show(Request $request){
         
         $teacher = new Teacher;
+
+        if($request->has('srchTeacherByName') && $request->has('srchTeacherByClass')){
+
+             $name = $request->input('srchTeacherByName');
+             $class = $request->input('srchTeacherByClass');
+
+             if(empty($name) && empty($class)){
+             
+                 return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id')
+                 ->join('user', 'user.user_no', '=', 'teacher.user_no')->paginate(3)->withPath('/admin/teacher');
+
+             }else if(!empty($name) && empty($class)){
+
+                  return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id')
+                  ->join('user', 'user.user_no', '=', 'teacher.user_no')
+                  ->where('user.first_name', 'like', '%' . $name . '%')
+                  ->orWhere('user.last_name', 'like', '%' . $name . '%')
+                  ->paginate(3)->withPath('/admin/teacher');
+
+             }else if(empty($name) && !empty($class)){
+                 
+                  return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id', 'class.classes_name')
+                  ->join('user', 'user.user_no', '=', 'teacher.user_no')
+                  ->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
+                  ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
+                  ->where('class.classes_no', $class)
+                  ->paginate(3)->withPath('/admin/teacher');
+
+             }else if(!empty($name) && !empty($class)){
+
+                 return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id', 'class.classes_name')
+                 ->join('user', 'user.user_no', '=', 'teacher.user_no')
+                 ->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
+                 ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
+                 ->where('class.classes_no', $class)
+                 ->where(function ($teacher) use ($name) {
+                      $teacher->where('user.first_name', 'like', '%' . $name . '%')
+                      ->orWhere('user.last_name', 'like', '%' . $name . '%');
+                 }) 
+                 ->paginate(3)->withPath('/admin/teacher');
+
+             }
+
+        }
+
         return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id')
-            ->join('user', 'user.user_no', '=', 'teacher.user_no')->paginate(3);
+            ->join('user', 'user.user_no', '=', 'teacher.user_no')->paginate(3)->withPath('/admin/teacher');
 
     }
 

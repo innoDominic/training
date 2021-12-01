@@ -254,7 +254,6 @@ class StudentController extends Controller
     public function show(Request $request){
 
         $student = new Student;
-        $teacher = new Teacher;
 
         if($request->has('srchStudentByName') && 
         $request->has('srchStudentByClass') && 

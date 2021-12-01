@@ -105,10 +105,33 @@ Route::group(['middleware' => 'admin'], function(){
             $result = request('result');
         }
 
+        $teacher_to_search = request('srchTeacherByName');
+        $selected_class = request('srchTeacherByClass');
+
+        $teacher_table_result = TeacherController::show(request());
+        $included_classes_under_teacher = [];
+        
+        if(empty($selected_class)){
+            foreach($teacher_table_result as $teacher){
+                
+                $included_classes = PlottedClassesController::getClassesByTeacher($teacher->user_no);
+
+               
+                foreach($included_classes as $class){
+                    $included_classes_under_teacher ["teacher_no"][] = $teacher->user_no;
+                    $included_classes_under_teacher ["class_name"][] = $class->classes_name;
+                }
+
+            }
+        }
+
         return view('teacher', [
             'result' => $result,
             'class_options' => $class_options,
-            'teacher_table_results' => TeacherController::show(request())
+            'teacher_to_search' => $teacher_to_search,
+            'selected_class' => $selected_class,
+            'included_classes_under_teacher' => $included_classes_under_teacher,
+            'teacher_table_results' => $teacher_table_result
         ]);
 
     })->name('teacher-list');
