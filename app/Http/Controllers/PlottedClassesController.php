@@ -33,12 +33,47 @@ class PlottedClassesController extends Controller
 
     }
 
-    public function getClassesExludedIn(Array $included_classes){
+    public function getClassesUnderStudents(){
+       
+        $plotted_classes = new PlottedClasses;
+
+        return $plotted_classes->from('plotted_classes as plot_class')
+        ->select('class.classes_name', 'class.classes_no', 'student.user_no')
+        ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
+        ->join('student', 'student.user_no', '=', 'plot_class.user_no')
+        ->get();
+
+    }
+
+    public function getClassesUnderTeachers(){
+       
+        $plotted_classes = new PlottedClasses;
+
+        return $plotted_classes->from('plotted_classes as plot_class')
+        ->select('class.classes_name', 'class.classes_no', 'teacher.user_no', 'user.first_name', 'user.last_name')
+        ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
+        ->join('teacher', 'teacher.user_no', '=', 'plot_class.user_no')
+        ->join('user', 'user.user_no', '=', 'teacher.user_no')
+        ->get();
+
+    }
+
+    public function getClassesExludedIn(Array $included_classes, $teacher_user_no){
 
         $class = new Classes;
 
+        $plotted_classes = new PlottedClasses;
+        $classes_with_teachers = $plotted_classes->from('plotted_classes as plot_class')
+        ->select('plot_class.classes_no')
+        ->groupBy('plot_class.classes_no')
+        ->join('teacher', 'teacher.user_no', '=', 'plot_class.user_no')
+        ->where('plot_class.user_no', '!=', $teacher_user_no)
+        ->get()->toArray();
+
         return $class->select('classes_name', 'classes_no')
-        ->whereNotIn('classes_no', $included_classes)->get();
+        ->whereNotIn('classes_no', $included_classes)
+        ->whereNotIn('classes_no', $classes_with_teachers)
+        ->get();
 
     }
 

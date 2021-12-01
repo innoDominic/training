@@ -6,7 +6,7 @@
      <h2 style="width:100%; text-align: left;">{{ $result }}</h2>
  </div>
  <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center;">
-     <form style="display: flex; flex-direction: column; width: 100%;" method="POST" action="/admin/student/create">
+     <form style="display: flex; flex-direction: column; width: 100%;" method="POST" action="{{ route('student.store') }}">
 
          <label> 
              Student ID: 
