@@ -52,7 +52,7 @@
         <input type="text" value="{{$selected_class->classes_no}}" name="selected_class" hidden/>
 
         @php
-            $date = date('Y-m-d',strtotime($selected_date))
+            $date = date('Y-m-d',strtotime($selected_date));
         @endphp
 
         <input type="date" id="attendance_date_id" name="attendance_date" value="{{$date}}" />

@@ -14,10 +14,13 @@
             </tr>
         </thead>
         <tbody>
+             @php
+                $date = date('Y-m-d');
+             @endphp
              @foreach($result as $classes)
                  <tr>
                      <td>{{$classes->classes_name}}</td>
-                     <td><a href="/teacher/attendance/{{$classes->classes_no}}/edit">Take Attendance</a></td>
+                     <td><a href="/teacher/attendance/{{$classes->classes_no}}/{{$date}}/edit">Take Attendance</a></td>
                  </tr>
              @endforeach
         </tbody>

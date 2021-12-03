@@ -7,6 +7,9 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\PlottedClassesController;
+use App\Http\Controllers\AttendanceController;
+
+use App\Models\Attendance;
 
 Route::get('/', function () {
 
@@ -275,7 +278,24 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
     Route::get('admin/plot-class/delete', 'PlottedClassesController@deletePlottedClass');
     Route::get('admin/plot-teacher/delete', 'PlottedClassesController@deletePlottedTeacher');
 
-    Route::resource('teacher/attendance', 'AttendanceController');
+    Route::get('teacher/attendance/{class_no}/{selected_date}/edit', function($class_no, $selected_date){
+
+        $classes = new ClassesController;
+        $attendance = new Attendance;
+        
+        $date = date('m/d/Y',strtotime(str_replace("-","/", $selected_date)));
+
+        $result = AttendanceController::getStudentsAttendanceByDate($date);
+        $selected_class = $classes->getClassInfo($class_no);
+
+        return view('attendance-edit', [
+            'result' => $result,
+            'selected_class' => $selected_class,
+            'selected_date' => $date
+        ]);
+    })->name('attendance.edit');
+
+    Route::resource('teacher/attendance', 'AttendanceController')->except(['edit']);
 
 });
 

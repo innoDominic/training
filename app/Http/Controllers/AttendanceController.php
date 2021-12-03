@@ -23,30 +23,6 @@ class AttendanceController extends Controller
 
     }
 
-    public function edit($class_no){
-
-        $classes = new ClassesController;
-        $attendance = new Attendance;
-        
-        $request = new Request;
-        $date = '';
-        if($request->has('selected_date')){
-            $date = $request->get('selected_date');
-        }else{
-            $date = date('m/d/Y');
-        }
-
-        $result = $this->getStudentsAttendanceByDate($date);
-        $selected_class = $classes->getClassInfo($class_no);
-
-        return view('attendance-edit', [
-            'result' => $result,
-            'selected_class' => $selected_class,
-            'selected_date' => $date
-        ]);
-
-    }
-
     public function store(Request $request){
 
     }
@@ -93,8 +69,10 @@ class AttendanceController extends Controller
         $success_count = count($success);
 
         if($success_count > 0 && $success_count == $count){
+            $selected_date = date('Y-m-d', strtotime($selected_date));
+
             return redirect()->route('attendance.edit', [
-                'attendance' => $request->input('selected_class'),
+                'class_no' => $request->input('selected_class'),
                 'selected_date' => $selected_date
             ]);
         }else{
