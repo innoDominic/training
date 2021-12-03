@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
 
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
@@ -11,20 +10,30 @@ use App\Http\Controllers\PlottedClassesController;
 
 Route::get('/', function () {
 
-        return view('login', ['result' => '']);
+   if(session()->has('user_no')){
+       if(session()->get('user_type') === 0){
+           return redirect('admin/student');
+       }else if(session()->get('user_type') === 1){
+           return redirect('teacher/attendance');
+       }else{
+           dd("Unkown User");
+       }
+   }   
 
-})->name('login')->middleware('checkIfLogged');
+   return view('login', ['result' => '']);
+
+})->name('login');
 
 Route::get('/logout', function () {
 
-    Session::flush();
+    session()->flush();
     return redirect('/');
 
 });
 
 Route::post('/', 'LoginController@authenticateUser');
 
-Route::group(['middleware' => 'admin'], function(){
+Route::group(['middleware' => 'redirect.authenticated'], function(){
 
     Route::resource('admin/student', 'StudentController')->except([
         'index', 'show'
@@ -265,6 +274,8 @@ Route::group(['middleware' => 'admin'], function(){
     Route::post('admin/plot-teacher/plot-class-teacher', 'PlottedClassesController@plotClassToTeacher');
     Route::get('admin/plot-class/delete', 'PlottedClassesController@deletePlottedClass');
     Route::get('admin/plot-teacher/delete', 'PlottedClassesController@deletePlottedTeacher');
+
+    Route::resource('teacher/attendance', 'AttendanceController');
 
 });
 

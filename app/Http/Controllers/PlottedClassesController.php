@@ -15,7 +15,7 @@ class PlottedClassesController extends Controller
         
         $plotted_classes = new PlottedClasses;
 
-        return $plotted_classes->select('user.user_no', 'user.first_name', 'user.last_name', 'student.student_id', 'plotted_classes.user_no')
+        return $plotted_classes->select('user.user_no', 'user.first_name', 'user.last_name', 'student.student_id', 'plotted_classes.user_no', 'plotted_classes.plot_no')
             ->join('user', 'user.user_no', '=', 'plotted_classes.user_no')
             ->join('student', 'student.user_no', '=', 'user.user_no')
             ->where('plotted_classes.classes_no', $class_no)->get();

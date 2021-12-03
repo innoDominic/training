@@ -13,12 +13,9 @@ class LoginController extends Controller
 {
     public function authenticateUser(Request $request){
 
-        if (Auth::attempt([
-                'user_name' => $request->input('username'), 
-                'password' => $request->input('password')
-            ])) {
+        $user = User::where('user_name', $request->input('username'))->first();
 
-            $user = User::where('user_name', $request->input('username'))->first();
+        if($user->count() > 0 && $user->password === $request->input('password')){
 
             session()->put('user_no', $user->user_no);
             session()->put('user_type', $user->user_type);
@@ -30,7 +27,7 @@ class LoginController extends Controller
 
             }else if($user->user_type == 1){
 
-                return redirect('/teacher/attendance');
+                return redirect('teacher/attendance');
 
             }else if($user->user_type == 2){
 
@@ -45,6 +42,11 @@ class LoginController extends Controller
 
         // Authentication failed...
         return view('login', ['result' => 'Failed, please try again']);
+    }
+
+    public function loginUsername()
+    {
+        return 'username';
     }
 }
 

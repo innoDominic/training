@@ -49,8 +49,8 @@
 
                         @elseif ( session('user_type') == 1 )
 
-                            <li><a href="">Attendance</a></li>
-                            <li><a href="">Attendance Reports</a></li>
+                            <li><a href="/teacher/attendance">Attendance</a></li>
+                            <li><a href="/teacher/attendance/reports">Attendance Reports</a></li>
 
                         @endif
                     </ul>

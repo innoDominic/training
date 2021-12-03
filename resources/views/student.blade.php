@@ -105,19 +105,17 @@
                                  if($class->user_no === $students->user_no){
                                      
                                      foreach($classes_under_teachers as $teacher){
-                                         if($class->classes_no === $teacher->classes_no){
-                                             if($students->classes_no == null){
-                                                 $teachers .= $teacher->last_name . ' ' . $teacher->first_name . ', ';
-                                             }else if($students->classes_no == $teacher->classes_no){
-                                                 $teachers = $teacher->last_name . ' ' . $teacher->first_name . ', ';
-                                             }
+                                         if($class->classes_no === $teacher->classes_no && $students->classes_no === null){
+                                             $teachers .= $teacher->last_name . ' ' . $teacher->first_name . ', ';        
+                                         }else if($students->classes_no == $teacher->classes_no){
+                                             $teachers = $teacher->last_name . ' ' . $teacher->first_name . ', ';
                                          }
                                      }
                                  }
                              }
 
                              echo rtrim($teachers, ', ');
-                          }
+                         }
                      ?>
                      </td>
 
