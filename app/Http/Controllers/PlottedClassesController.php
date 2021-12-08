@@ -130,14 +130,14 @@ class PlottedClassesController extends Controller
 
     public function deletePlottedTeacher(Request $request){
         
-     $plot_class = new PlottedClasses;
+        $plot_class = new PlottedClasses;
 
-     $plot_class->where('user_no', $request->input('id'))
-     ->where('classes_no', $request->input('class'))->delete();
+        $plot_class->where('user_no', $request->input('id'))
+        ->where('classes_no', $request->input('class'))->delete();
 
-     return redirect()->route('plot-teacher-list', [
-         'selected_teacher' => $request->input('id')
-     ]);
+        return redirect()->route('plot-teacher-list', [
+            'selected_teacher' => $request->input('id')
+        ]);
 
  }
 }

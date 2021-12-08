@@ -15,7 +15,8 @@
         </thead>
         <tbody>
              @php
-                $date = date('Y-m-d');
+                $date = date('Y/m/d');
+                $date = urlencode(urlencode($date));
              @endphp
              @foreach($result as $classes)
                  <tr>

@@ -45,7 +45,7 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
     Route::get('admin/student', function () {
 
         $teacher_options = TeacherController::getNumAndName();
-        $class_options = ClassesController::getNumAndName();
+        $class_options   = ClassesController::getNumAndName();
 
         $result = '';
 
@@ -53,9 +53,9 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
             $result = request('result');
         }
 
-        $student_to_search = request('srchStudentByName');
-        $selected_class = request('srchStudentByClass');
-        $selected_teacher = request('srchStudentByTeacher');
+        $student_to_search  = request('srchStudentByName');
+        $selected_class     = request('srchStudentByClass');
+        $selected_teacher   = request('srchStudentByTeacher');
 
         $teacher_name = '';
         foreach($teacher_options as $teacher){
@@ -73,16 +73,16 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
         }
 
         return view('student', [
-            'result' => $result,
-            'teacher_options' => $teacher_options,
-            'class_options' => $class_options,
-            'selected_teacher' => $selected_teacher,
-            'selected_teacher_name' => $teacher_name,
-            'selected_class' => $selected_class,
-            'student_to_search' => $student_to_search,
+            'result'                 => $result,
+            'teacher_options'        => $teacher_options,
+            'class_options'          => $class_options,
+            'selected_teacher'       => $selected_teacher,
+            'selected_teacher_name'  => $teacher_name,
+            'selected_class'         => $selected_class,
+            'student_to_search'      => $student_to_search,
             'classes_under_students' => $classes_under_students,
             'classes_under_teachers' => $classes_under_teachers,
-            'student_table_results' => StudentController::show(request())
+            'student_table_results'  => StudentController::show(request())
         ]);
 
     })->name('student-list');
@@ -118,7 +118,7 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
         }
 
         $teacher_to_search = request('srchTeacherByName');
-        $selected_class = request('srchTeacherByClass');
+        $selected_class    = request('srchTeacherByClass');
 
         $teacher_table_result = TeacherController::show(request());
         $included_classes_under_teacher = [];
@@ -138,12 +138,12 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
         }
 
         return view('teacher', [
-            'result' => $result,
-            'class_options' => $class_options,
-            'teacher_to_search' => $teacher_to_search,
-            'selected_class' => $selected_class,
+            'result'                         => $result,
+            'class_options'                  => $class_options,
+            'teacher_to_search'              => $teacher_to_search,
+            'selected_class'                 => $selected_class,
             'included_classes_under_teacher' => $included_classes_under_teacher,
-            'teacher_table_results' => $teacher_table_result
+            'teacher_table_results'          => $teacher_table_result
         ]);
 
     })->name('teacher-list');
@@ -159,7 +159,7 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
     Route::get('admin/class/edit', function(){
 
         return view('class-edit', [
-            'result' => '',
+            'result'     => '',
             'class_info' => ClassesController::getClassInfo(request('id'))
         ]);
 
@@ -246,8 +246,7 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
     Route::post('admin/plot-teacher', function(){
 
         $teacher_options = TeacherController::getNumAndName();
-
-        $class_options = ClassesController::getNumAndName();
+        $class_options   = ClassesController::getNumAndName();
 
         $included_classes = PlottedClassesController::getClassesByTeacher(request('selected_teacher'));
 
@@ -280,29 +279,72 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
 
     Route::get('teacher/attendance/{class_no}/{selected_date}/edit', function($class_no, $selected_date){
 
-        $classes = new ClassesController;
-        $attendance = new Attendance;
+        $classes    = new ClassesController;
+        $attendance = new AttendanceController;
         
-        $date = date('m/d/Y',strtotime(str_replace("-","/", $selected_date)));
+        $date = date('Y/m/d', strtotime(urldecode($selected_date)));
 
-        $result = AttendanceController::getStudentsAttendanceByDate($date);
-        $selected_class = $classes->getClassInfo($class_no);
+        $result          = $attendance->getAttendanceByDateAndClass($date, $class_no);
+        $selected_class  = $classes->getClassInfo($class_no);
 
         return view('attendance-edit', [
-            'result' => $result,
+            'result'         => $result,
             'selected_class' => $selected_class,
-            'selected_date' => $date
+            'selected_date'  => $date
         ]);
     })->name('attendance.edit');
+
+    Route::get('teacher/attendance/reports', function(){
+        $attendance = new AttendanceController;
+        $results = $attendance->getClassNameAndAttendance();
+
+        $classes_and_values = [];
+        $classes = [];
+        $class_dates = [];
+
+        foreach($results as $value){
+            foreach($value as $v){
+
+                $date = date('Y/m', strtotime($v->att_date));
+
+                $class_dates [] = $date;
+                $class_dates = array_unique($class_dates);
+
+                $classes [] = $v->classes_name;
+                $classes = array_unique($classes);
+
+                if($v->att_status == 1){
+                    if(empty($classes_and_values[$v->classes_name][$date]['present'])){
+                        $classes_and_values[$v->classes_name][$date]['present'] = 1;
+                    }else{
+                        $classes_and_values[$v->classes_name][$date]['present'] += 1;
+                    }
+                }
+
+                if(empty($classes_and_values[$v->classes_name][$date]['total'])){
+                    $classes_and_values[$v->classes_name][$date]['total'] = 1;
+                }else{
+                    $classes_and_values[$v->classes_name][$date]['total'] += 1;
+                }
+
+            }
+        }
+
+        foreach($classes_and_values as $class => $dates){
+            foreach($dates as $date => $value){
+
+                $classes_and_values[$class][$date]['average'] = number_format(($classes_and_values[$class][$date]['present'] / $classes_and_values[$class][$date]['total']) * 100, 1);
+
+            }
+        }
+
+        return view('attendance-reports', [
+            'classes' => $classes,
+            'dates' => $class_dates,
+            'averages' => $classes_and_values
+        ]);
+    });
 
     Route::resource('teacher/attendance', 'AttendanceController')->except(['edit']);
 
 });
-
-/*Route::get('/test', function () {
-
-   return view('test', [
-       'test' => $student_list
-   ]);
-
-})->name('test');*/
