@@ -53,6 +53,62 @@ class TeacherController extends Controller
 
     }
 
+    public function createWithCSV(Request $request){
+        if($request->hasFile('csvFile')){
+
+            $csvValues = explode(',',$request->file('csvFile')->get());
+            $count = count($csvValues);
+
+            for($i = 0; $i < $count; $i++){
+                if(empty($csvValues[$i])){
+      
+                    return redirect()->route('teacher-list', [
+                        'result' => 'One of the values is missing, please check the file'
+                    ]);
+
+                }
+            }
+
+            if($this->checkIfUsernameExist($csvValues[1])){
+                return redirect()->route('teacher-list', [
+                    'result' => 'Username Already exists'
+                ]);
+            }
+    
+            if($this->checkIfTeacherIdExist($csvValues[0])){
+                return redirect()->route('teacher-list', [
+                    'result' => 'Teacher ID Already exists'
+                 ]);
+            }
+    
+            $user = new User;
+            $teacher = new Teacher;
+    
+            $user->user_name = $csvValues[1];
+            $user->password = $csvValues[4];
+            $user->first_name = $csvValues[2];
+            $user->last_name = $csvValues[3];
+            $user->user_type = 1;
+            $user->save();
+    
+            $teacher->teacher_id = $csvValues[0];
+            $teacher->teacher_title = $csvValues[5];
+            $teacher->user_no = $user->user_no;
+            $teacher->save();
+
+            return redirect()->route('teacher-list', [
+                'result' => 'User Saved'
+            ]);
+
+        }else{
+            
+            return redirect()->route('teacher-list', [
+                'result' => 'File does not exist'
+            ]);
+
+        }
+    }
+
     public function edit(Request $request){
      
         #Check if Request is empty

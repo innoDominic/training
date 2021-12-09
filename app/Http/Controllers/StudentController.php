@@ -166,7 +166,7 @@ class StudentController extends Controller
             $student = new Student;
     
             $user->user_name = $csvValues[1];
-            $user->password = Hash::make($csvValues[4]);
+            $user->password = $csvValues[4];
             $user->first_name = $csvValues[2];
             $user->last_name = $csvValues[3];
             $user->user_type = 2;

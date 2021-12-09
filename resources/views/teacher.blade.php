@@ -6,7 +6,7 @@
      <h2>Teachers</h2>
      <button onclick="window.open('/admin/teacher/create','_self')" style="max-height: 50px; padding: 10px;">Create</button>
      
-     <form id="csvTeacherForm" method="POST" action="/admin/teacher/csv" enctype="multipart/form-data">
+     <form id="csvTeacherForm" method="POST" action="/admin/teacher/create/csv" enctype="multipart/form-data">
          <input type="file" id="selectedFile" name="csvFile" style="display: none;" onChange="document.getElementById('csvTeacherForm').submit();" />
          @csrf
          <input type="button" value="CSV Upload" style="max-height: 50px; padding: 10px;" onclick="document.getElementById('selectedFile').click();" />

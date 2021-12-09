@@ -266,6 +266,7 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
 
     Route::post('admin/teacher/create', 'TeacherController@create');
     Route::post('admin/teacher/edit', 'TeacherController@edit');
+    Route::post('admin/teacher/create/csv', 'TeacherController@createWithCSV');
     Route::get('admin/teacher/delete', 'TeacherController@delete');
 
     Route::post('admin/class/create', 'ClassesController@create');
