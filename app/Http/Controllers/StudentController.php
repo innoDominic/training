@@ -415,6 +415,5 @@ class StudentController extends Controller
         $student = new Student;
 
         return $student->join('user', 'user.user_no', '=', 'student.user_no')->where('student.user_no', '=', $id)->first();
-
     }
 }

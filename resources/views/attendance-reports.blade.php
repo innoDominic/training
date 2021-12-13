@@ -3,7 +3,7 @@
 @section('content')
 <div style="width: 100%; display:flex; flex-direction: row; justify-content: flex-start; align-items: center;">
      <h2>Attendance Reports</h2>
-     <button onclick="window.open('/admin/class/create','_self')" style="max-height: 50px; padding: 10px;">CSV Download</button>
+     <button onclick="window.open('/teacher/attendance/report/csv')" style="max-height: 50px; padding: 10px;">CSV Download</button>
 </div>
 
 <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center;">

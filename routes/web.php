@@ -73,16 +73,16 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
         }
 
         return view('student', [
-            'result'                 => $result,
-            'teacher_options'        => $teacher_options,
-            'class_options'          => $class_options,
-            'selected_teacher'       => $selected_teacher,
-            'selected_teacher_name'  => $teacher_name,
-            'selected_class'         => $selected_class,
-            'student_to_search'      => $student_to_search,
-            'classes_under_students' => $classes_under_students,
-            'classes_under_teachers' => $classes_under_teachers,
-            'student_table_results'  => StudentController::show(request())
+            'result'                  =>  $result,
+            'teacher_options'         =>  $teacher_options,
+            'class_options'           =>  $class_options,
+            'selected_teacher'        =>  $selected_teacher,
+            'selected_teacher_name'   =>  $teacher_name,
+            'selected_class'          =>  $selected_class,
+            'student_to_search'       =>  $student_to_search,
+            'classes_under_students'  =>  $classes_under_students,
+            'classes_under_teachers'  =>  $classes_under_teachers,
+            'student_table_results'   =>  StudentController::show(request())
         ]);
 
     })->name('student-list');
@@ -256,9 +256,9 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
         }
 
         return view('plot-teacher', [
-            'teacher_options' => $teacher_options,
-            'selected_teacher' => request('selected_teacher'),
-            'class_options' => PlottedClassesController::getClassesExludedIn($included_classes_id, request('selected_teacher')),
+            'teacher_options'     => $teacher_options,
+            'selected_teacher'    => request('selected_teacher'),
+            'class_options'       => PlottedClassesController::getClassesExludedIn($included_classes_id, request('selected_teacher')),
             'class_table_results' => $included_classes
         ]);
 
@@ -295,56 +295,7 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
         ]);
     })->name('attendance.edit');
 
-    Route::get('teacher/attendance/reports', function(){
-        $attendance = new AttendanceController;
-        $results = $attendance->getClassNameAndAttendance();
-
-        $classes_and_values = [];
-        $classes = [];
-        $class_dates = [];
-
-        foreach($results as $value){
-            foreach($value as $v){
-
-                $date = date('Y/m', strtotime($v->att_date));
-
-                $class_dates [] = $date;
-                $class_dates = array_unique($class_dates);
-
-                $classes [] = $v->classes_name;
-                $classes = array_unique($classes);
-
-                if($v->att_status == 1){
-                    if(empty($classes_and_values[$v->classes_name][$date]['present'])){
-                        $classes_and_values[$v->classes_name][$date]['present'] = 1;
-                    }else{
-                        $classes_and_values[$v->classes_name][$date]['present'] += 1;
-                    }
-                }
-
-                if(empty($classes_and_values[$v->classes_name][$date]['total'])){
-                    $classes_and_values[$v->classes_name][$date]['total'] = 1;
-                }else{
-                    $classes_and_values[$v->classes_name][$date]['total'] += 1;
-                }
-
-            }
-        }
-
-        foreach($classes_and_values as $class => $dates){
-            foreach($dates as $date => $value){
-
-                $classes_and_values[$class][$date]['average'] = number_format(($classes_and_values[$class][$date]['present'] / $classes_and_values[$class][$date]['total']) * 100, 1);
-
-            }
-        }
-
-        return view('attendance-reports', [
-            'classes' => $classes,
-            'dates' => $class_dates,
-            'averages' => $classes_and_values
-        ]);
-    });
+    Route::get('/teacher/attendance/report/csv', 'AttendanceController@downloadCSV');
 
     Route::resource('teacher/attendance', 'AttendanceController')->except(['edit']);
 

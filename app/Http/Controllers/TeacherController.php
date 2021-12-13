@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Models\User;
 use App\Models\Teacher;
 use App\Models\PlottedClasses;
@@ -238,28 +239,28 @@ class TeacherController extends Controller
     }
 
     public function checkIfUsernameExist($user_name, $id = null){
-       $user_model = new User;
+        $user_model = new User;
 
-       if($id === null){
-       
-           $get_duplicates = $user_model::where('user_name', $user_name)->get();
+        if($id === null){
+        
+            $get_duplicates = $user_model::where('user_name', $user_name)->get();
 
-           if($get_duplicates->count() > 0){
-               return true;
-           }
+            if($get_duplicates->count() > 0){
+                return true;
+            }
 
-       }else{
+        }else{
 
-           $get_duplicates = $user_model::where('user_name', $user_name)->where('user_no', '!=', $id)->get();
+            $get_duplicates = $user_model::where('user_name', $user_name)->where('user_no', '!=', $id)->get();
 
-           if($get_duplicates->count() > 0){
-               return true;
-           }
+            if($get_duplicates->count() > 0){
+                return true;
+            }
 
-       }
+        }
 
-       return false;
-     }
+        return false;
+    }
 
    public function checkIfTeacherIdExist($teacher_id, $id = null){
        $teacher = new Teacher;

@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Attendance;
 
-use Illuminate\Support\Facades\DB;
-
 use App\Http\Controllers\PlottedClassesController;
 use App\Http\Controllers\ClassesController;
 
@@ -99,6 +97,54 @@ class AttendanceController extends Controller
         }
     }
 
+    public function show(){
+        list($class_dates, $classes, $classes_and_values) = $this->getClassNamesDatesAndAverages();
+
+        return view('attendance-reports', [
+            'classes'   => $classes,
+            'dates'     => $class_dates,
+            'averages'  => $classes_and_values
+        ]);
+    }
+
+    public function downloadCSV(){
+        $fileName = 'Report.csv';
+        list($class_dates, $classes, $classes_and_values) = $this->getClassNamesDatesAndAverages();
+
+        $headers = array(
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        );
+
+        $columns = array('Class');
+        foreach($class_dates as $date){
+            $columns [] = $date;
+        }
+
+        $callback = function() use($classes_and_values, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach($classes_and_values as $class_key => $class_value){
+                $row_manager = [];
+                $row['Class']  = $class_key;
+                $row_manager [] = $row['Class'];
+                foreach($class_value as $date_key => $date_value){
+                    $row[$date_key] = $date_value['average'];
+                    $row_manager[] = $row[$date_key];
+                }
+                fputcsv($file, $row_manager);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
     public function getClassNameAndAttendance(){
         $user_no = session()->get('user_no');
         $attendance = new Attendance;
@@ -110,5 +156,46 @@ class AttendanceController extends Controller
         ->orderBy('attendance.att_date', 'ASC')->get();
 
         return $query->groupBy('class.classes_no', 'attendance.att_date');
+    }
+
+    public function getClassNamesDatesAndAverages(){
+        $results = $this->getClassNameAndAttendance();
+
+        $classes_and_values = [];
+        $classes = [];
+        $class_dates = [];
+
+        foreach($results as $value){
+            foreach($value as $v){
+
+                $date = date('Y/m', strtotime($v->att_date));
+
+                $class_dates [] = $date;
+                $classes [] = $v->classes_name;
+
+                if(empty($classes_and_values[$v->classes_name][$date]['present'])){
+                    $classes_and_values[$v->classes_name][$date]['present'] = 0;
+                }
+
+                if($v->att_status == 1){
+                    $classes_and_values[$v->classes_name][$date]['present'] += 1;
+                }
+
+                if(empty($classes_and_values[$v->classes_name][$date]['total'])){
+                    $classes_and_values[$v->classes_name][$date]['total'] = 1;
+                }else{
+                    $classes_and_values[$v->classes_name][$date]['total'] += 1;
+                }
+
+                $classes_and_values[$v->classes_name][$date]['average'] = number_format(($classes_and_values[$v->classes_name][$date]['present'] / $classes_and_values[$v->classes_name][$date]['total']) * 100, 1);
+
+            }
+        }
+
+
+        $class_dates = array_unique($class_dates);
+        $classes = array_unique($classes);
+
+        return array($class_dates, $classes, $classes_and_values);
     }
 }
