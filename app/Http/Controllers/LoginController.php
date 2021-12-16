@@ -42,6 +42,27 @@ class LoginController extends Controller
 
         // Authentication failed...
         return view('login', ['result' => 'Failed, please try again']);
+
+    }
+
+    public function authenticateUserApi(Request $request){
+        
+        $user = User::where('user_name', $request->input('user_name'))->first();
+
+        if($user->count() > 0 && $user->password === $request->input('password')){
+
+            $user_find = User::find($user->user_no);
+        
+            $access_token = $user_find->createToken('authToken')->accessToken;
+            return response([
+                "user" => $user,
+                "access_token" => $access_token
+            ]);
+
+        }
+
+        return response(["message" => "Failed to login"]);
+
     }
 
     public function loginUsername()

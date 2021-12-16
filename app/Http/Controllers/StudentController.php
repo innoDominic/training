@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 use App\Models\Student;
@@ -27,8 +28,7 @@ class StudentController extends Controller
         
         return view('student-edit', [
             'result' => '',
-            'student_in
-            fo' => $this->getStudentInfo($user_no)
+            'student_info' => $this->getStudentInfo($user_no)
         ]);
 
     }
@@ -415,5 +415,15 @@ class StudentController extends Controller
         $student = new Student;
 
         return $student->join('user', 'user.user_no', '=', 'student.user_no')->where('student.user_no', '=', $id)->first();
+    }
+
+    public function apiGetStudentInfo(Request $request){
+
+        $student = new Student;
+
+        $student_info = $student->join('user', 'user.user_no', '=', 'student.user_no')
+        ->where('student.student_id', $request->input('student_id'))->get();
+
+        return response(['Request' => $student_info]);
     }
 }

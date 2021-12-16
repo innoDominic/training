@@ -192,7 +192,6 @@ class AttendanceController extends Controller
             }
         }
 
-
         $class_dates = array_unique($class_dates);
         $classes = array_unique($classes);
 
