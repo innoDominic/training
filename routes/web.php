@@ -221,8 +221,12 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
     Route::get('admin/plot-teacher', function(){
 
         $teacher_options = TeacherController::getNumAndName();
+        $selected_teacher = '';
 
-        $selected_teacher = $teacher_options[0]->user_no;
+        if(count($teacher_options) > 0){
+            $selected_teacher = $teacher_options[0]->user_no;
+        }
+
         if(request()->has('selected_teacher')){
             $selected_teacher = request('selected_teacher');
         }

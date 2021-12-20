@@ -114,7 +114,7 @@ class StudentController extends Controller
 
         $student->where('user_no', $request->input('user_no'))
         ->update([
-         'student_id' => $request->input('student_id')
+            'student_id' => $request->input('student_id')
         ]);
 
         return view('student-edit', [
@@ -130,10 +130,18 @@ class StudentController extends Controller
         $plotted_classes = new PlottedClasses;
         $attendance = new Attendance;
 
+        $plotted_no = $plotted_classes->select('plot_no')->where('user_no', $user_no)->get('plot_no')->toArray();
+        $plotted_nums = [];
+
+        foreach($plotted_no as $plot_no){
+            $plotted_nums [] = $plot_no["plot_no"];
+        }
+
         $user->where('user_no', '=', $user_no)->delete();
         $student->where('user_no', '=', $user_no)->delete();
-        $plotted_no = $plotted_classes->select('plot_no')->where('user_no', $user_no)->get()->toArray();
-        $attendance->whereIn('plot_no', $plotted_no)->delete();
+        $attendance->whereIn('plot_no', $plotted_nums)->get()->each(function($att){
+            $att->delete();
+        });
         $plotted_classes->where('user_no', '=', $user_no)->delete();
 
         return redirect()->route('student-list');

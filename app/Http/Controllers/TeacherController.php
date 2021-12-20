@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Teacher;
 use App\Models\PlottedClasses;
+use App\Models\Attendance;
 
 class TeacherController extends Controller
 {
@@ -30,7 +31,7 @@ class TeacherController extends Controller
         if($this->checkIfTeacherIdExist($request->input('teacher_id'))){
             return view('teacher-create', [
                 'result' => 'Teacher ID Already exists'
-             ]);
+            ]);
         }
 
         $user = new User;
@@ -217,10 +218,21 @@ class TeacherController extends Controller
         $user = new User;
         $teacher = new Teacher;
         $plotted_classes = new PlottedClasses;
+        $attendance = new Attendance;
 
-        $user->where('user_no', '=', request('id'))->delete();
-        $teacher->where('user_no', '=', request('id'))->delete();
-        $plotted_classes->where('user_no', '=', request('id'))->delete();
+        $plotted_no = $plotted_classes->select('plot_no')->where('user_no', $request->id)->get('plot_no')->toArray();
+        $plotted_nums = [];
+
+        foreach($plotted_no as $plot_no){
+            $plotted_nums [] = $plot_no["plot_no"];
+        }
+
+        $user->where('user_no', '=', $request->id)->delete();
+        $teacher->where('user_no', '=', $request->id)->delete();
+        $attendance->whereIn('plot_no', $plotted_nums)->get()->each(function($att){
+            $att->delete();
+        });
+        $plotted_classes->where('user_no', '=', $request->id)->delete();
 
         return redirect()->route('teacher-list');
     }
