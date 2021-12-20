@@ -7,6 +7,7 @@ use App\Models\Attendance;
 
 use App\Http\Controllers\PlottedClassesController;
 use App\Http\Controllers\ClassesController;
+use App\Http\Controllers\StudentController;
 
 class AttendanceController extends Controller
 {
@@ -98,7 +99,7 @@ class AttendanceController extends Controller
     }
 
     public function show(){
-        list($class_dates, $classes, $classes_and_values) = $this->getClassNamesDatesAndAverages();
+        list($class_dates, $classes, $classes_and_values) = $this->getClassNamesDatesAndAverages($this->getClassNameAndAttendance());
 
         return view('attendance-reports', [
             'classes'   => $classes,
@@ -109,7 +110,7 @@ class AttendanceController extends Controller
 
     public function downloadCSV(){
         $fileName = 'Report.csv';
-        list($class_dates, $classes, $classes_and_values) = $this->getClassNamesDatesAndAverages();
+        list($class_dates, $classes, $classes_and_values) = $this->getClassNamesDatesAndAverages($this->getClassNameAndAttendance());
 
         $headers = array(
             "Content-type"        => "text/csv",
@@ -145,21 +146,34 @@ class AttendanceController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
-    public function getClassNameAndAttendance(){
+    public function getClassNameAndAttendance($student_user_no = null){
         $user_no = session()->get('user_no');
         $attendance = new Attendance;
 
-        $query = $attendance->select('class.classes_name', 'class.classes_no', 'attendance.att_date', 'attendance.att_status')
-        ->join('plotted_classes as p_class', 'p_class.plot_no', '=', 'attendance.plot_no')
-        ->join('classes as class', 'class.classes_no', '=', 'p_class.classes_no')
-        ->where('attendance.teacher_no', $user_no)
-        ->orderBy('attendance.att_date', 'ASC')->get();
+        if($student_user_no != null){
+
+            $query = $attendance->select('class.classes_name', 'class.classes_no', 'attendance.att_date', 'attendance.att_status')
+            ->join('plotted_classes as p_class', 'p_class.plot_no', '=', 'attendance.plot_no')
+            ->join('user', 'user.user_no', '=', 'p_class.user_no')
+            ->join('classes as class', 'class.classes_no', '=', 'p_class.classes_no')
+            ->where('user.user_no', $student_user_no)
+            ->orderBy('attendance.att_date', 'ASC')->get();
+
+        }else{
+
+            $query = $attendance->select('class.classes_name', 'class.classes_no', 'attendance.att_date', 'attendance.att_status')
+            ->join('plotted_classes as p_class', 'p_class.plot_no', '=', 'attendance.plot_no')
+            ->join('classes as class', 'class.classes_no', '=', 'p_class.classes_no')
+            ->where('attendance.teacher_no', $user_no)
+            ->orderBy('attendance.att_date', 'ASC')->get();
+
+        }
 
         return $query->groupBy('class.classes_no', 'attendance.att_date');
     }
 
-    public function getClassNamesDatesAndAverages(){
-        $results = $this->getClassNameAndAttendance();
+    public function getClassNamesDatesAndAverages($classNamesAndAttendance){
+        $results = $classNamesAndAttendance;
 
         $classes_and_values = [];
         $classes = [];
@@ -196,5 +210,13 @@ class AttendanceController extends Controller
         $classes = array_unique($classes);
 
         return array($class_dates, $classes, $classes_and_values);
+    }
+
+    public function apiGetStudentAttendance(Request $request){
+
+        $student = StudentController::getStudentNo($request->input('student_id'));
+
+        return response(['student_attendance' => $this->getClassNamesDatesAndAverages($this->getClassNameAndAttendance($student->user_no))]);
+
     }
 }

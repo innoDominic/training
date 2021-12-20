@@ -12,6 +12,7 @@ use App\Models\Teacher;
 use App\Models\PlottedClasses;
 
 use App\Http\Controllers\PlottedClassesController;
+use App\Http\Controllers\AttendanceController;
 
 class StudentController extends Controller
 {   
@@ -417,6 +418,10 @@ class StudentController extends Controller
         return $student->join('user', 'user.user_no', '=', 'student.user_no')->where('student.user_no', '=', $id)->first();
     }
 
+    public function getStudentNo($student_id){
+        return Student::select('user_no')->where('student_id', $student_id)->first();
+    }
+
     public function apiGetStudentInfo(Request $request){
 
         $student = new Student;
@@ -425,5 +430,6 @@ class StudentController extends Controller
         ->where('student.student_id', $request->input('student_id'))->get();
 
         return response(['Request' => $student_info]);
+
     }
 }

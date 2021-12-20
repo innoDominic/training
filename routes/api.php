@@ -25,3 +25,7 @@ Route::prefix('/login')->group(function(){
 Route::prefix('/student')->group(function(){
     Route::middleware('auth:api')->post('/get-info','StudentController@apiGetStudentInfo');
 });
+
+Route::prefix('/student')->group(function(){
+    Route::middleware('auth:api')->post('/get-attendance','AttendanceController@apiGetStudentAttendance');
+});

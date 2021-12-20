@@ -51,9 +51,9 @@ class LoginController extends Controller
 
         if($user->count() > 0 && $user->password === $request->input('password')){
 
-            $user_find = User::find($user->user_no);
+            #$user_find = User::find($user->user_no);
         
-            $access_token = $user_find->createToken('authToken')->accessToken;
+            $access_token = $user->createToken('authToken')->accessToken;
             return response([
                 "user" => $user,
                 "access_token" => $access_token
@@ -65,8 +65,7 @@ class LoginController extends Controller
 
     }
 
-    public function loginUsername()
-    {
+    public function loginUsername(){
         return 'username';
     }
 }
