@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\PlottedClasses;
+use App\Models\Attendance;
 
 use App\Http\Controllers\PlottedClassesController;
 use App\Http\Controllers\AttendanceController;
@@ -127,9 +128,12 @@ class StudentController extends Controller
         $user = new User;
         $student = new Student;
         $plotted_classes = new PlottedClasses;
+        $attendance = new Attendance;
 
         $user->where('user_no', '=', $user_no)->delete();
         $student->where('user_no', '=', $user_no)->delete();
+        $plotted_no = $plotted_classes->select('plot_no')->where('user_no', $user_no)->get()->toArray();
+        $attendance->whereIn('plot_no', $plotted_no)->delete();
         $plotted_classes->where('user_no', '=', $user_no)->delete();
 
         return redirect()->route('student-list');
