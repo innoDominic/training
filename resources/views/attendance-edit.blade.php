@@ -1,8 +1,9 @@
 @extends('layouts.layout-with-nav')
 
 @section('content')
-<div style="width: 100%; display:flex; flex-direction: row; justify-content: flex-start; align-items: center;">
-     <h2>Attendance - {{$selected_class->classes_name}}</h2>
+<div style="width: 100%; display:flex; flex-direction: column; justify-content: center;">
+     <h2 style="margin-bottom:0px !important;">Attendance - {{$selected_class->classes_name}}</h2>
+     <h4 style="margin-bottom:0px !important;">Period: {{$selected_period}}</h4>
 </div>
 
 <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center;">
@@ -21,7 +22,7 @@
                 @php
                     $i = 0;
                 @endphp
-                @foreach($result as $student)
+                @foreach($students as $student)
                     <tr>
                         <td>{{$student->student_id}}</td>
                         <td>{{$student->last_name}}, {{$student->first_name}}</td>
@@ -36,11 +37,15 @@
                             @csrf
                         </td>
                     </tr>
-                    @if($student->att_status == 1)
-                    <script>
-                        $('.attendance-' + '{{$student->user_no}}').prop('checked', true);
-                    </script>
-                    @endif
+                    @foreach($attendance as $att)
+                        @if($student->plot_no == $att->plot_no)
+                            @if($att->att_status == 1)
+                                <script>
+                                    $('.attendance-' + '{{$student->user_no}}').prop('checked', true);
+                                </script>
+                            @endif
+                        @endif
+                    @endforeach
                     @php
                         $i++;
                     @endphp
@@ -55,6 +60,7 @@
         <input type="number" value="{{$i}}" name="student_count" hidden/>
         <input type="text" value="{{$selected_class->classes_no}}" name="selected_class" hidden/>
         <input type="text" value="{{$selected_date}}" name="attendance_date" hidden/>
+        <input type="text" value="{{$selected_period}}" name="attendance_period" hidden/>
 
         <button style="max-height: 50px; padding: 10px; margin-right: auto; margin-top: 40px;">Save</button>
     </form>

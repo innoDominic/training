@@ -8,7 +8,7 @@
 <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center;">
     
      <form id="searchForm" style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/plot-teacher">
-         <div style="width:50%;">
+         <div style="width:80%;">
              <label>
                  Select Teacher:
                  <select type="text" class="selected_teacher" name="selected_teacher" style="border: solid 1px black;">
@@ -17,15 +17,29 @@
                      @endforeach
                  </select>
                  @csrf
-             </label>     
+             </label>
+             <label>
+                    Select Period:
+                    <select type="text" class="selected_period" name="selected_period" style="border: solid 1px black;">
+                        <option value="08:00 AM - 09:00 AM">08:00 AM - 09:00 AM</option>
+                        <option value="09:00 AM - 10:00 AM">09:00 AM - 10:00 AM</option>
+                        <option value="10:00 AM - 11:00 AM">10:00 AM - 11:00 AM</option>
+                        <option value="11:00 AM - 12:00 PM">11:00 AM - 12:00 PM</option>
+                        <option value="01:00 PM - 02:00 PM">01:00 PM - 02:00 PM</option>
+                        <option value="02:00 PM - 03:00 PM">02:00 PM - 03:00 PM</option>
+                        <option value="03:00 PM - 04:00 PM">03:00 PM - 04:00 PM</option>
+                        <option value="04:00 PM - 05:00 PM">04:00 PM - 05:00 PM</option>
+                    </select>
+                </label>
          </div>
-         <div style="width: 50%; display: flex; flex-direction: column; justify-content: flex-end;">
+         <div style="width: 20%; display: flex; flex-direction: column; justify-content: flex-end;">
              <button style="max-width: 200px; margin: 0 auto; max-height: 50px; padding: 10px;">View</button>
          </div>
      </form>
 
      <script>
          $(".selected_teacher").val("{{$selected_teacher}}");
+         $(".selected_period").val("{{$selected_period}}");
      </script>
 
 </div>
@@ -35,6 +49,7 @@
         <thead>
             <tr>
                 <th>Class</th>
+                <th>Period</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -42,7 +57,8 @@
              @foreach($class_table_results as $class)
                  <tr>
                      <td>{{$class->classes_name}}</td>
-                     <td><a href="/admin/plot-teacher/delete?id={{$selected_teacher}}&class={{$class->classes_no}}">Remove</a></td>
+                     <td>{{$class->period}}</td>
+                     <td><a href="/admin/plot-teacher/delete?id={{$selected_teacher}}&class={{$class->classes_no}}&period={{$class->period}}">Remove</a></td>
                  </tr>
              @endforeach
         </tbody>
@@ -63,11 +79,14 @@
                  </select>
                  @csrf
              </label>
-             <input type="text" class="selected_teacher_to_plot" name="selected_teacher_to_plot" value="{{$selected_teacher}}" hidden />   
+             <input type="text" class="selected_teacher_to_plot" name="selected_teacher_to_plot" value="{{$selected_teacher}}" hidden />
+
+             <input type="text" class="selected_period_to_plot" name="selected_period_to_plot" value="{{$selected_period}}" hidden />   
              @csrf 
          </div>
          <div style="width: 50%; display: flex; flex-direction: column; justify-content: flex-end;">
              <button style="max-width: 200px; margin: 0 auto; max-height: 50px; padding: 10px;" class="addClassBtn">Add</button>
+             <h3>{{$result}}</h3>
          </div>
      </form>
 

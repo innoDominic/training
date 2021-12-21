@@ -10,18 +10,23 @@
         <thead>
             <tr>
                 <th>Class</th>
+                <th>Period</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-             @php
+            @php
                 $date = date('Y/m/d');
                 $date = urlencode(urlencode($date));
-             @endphp
-             @foreach($result as $classes)
+            @endphp
+            @foreach($result as $classes)
+                @php
+                    $period = urlencode(urlencode($classes->period));
+                @endphp
                  <tr>
                      <td>{{$classes->classes_name}}</td>
-                     <td><a href="/teacher/attendance/{{$classes->classes_no}}/{{$date}}/edit">Take Attendance</a></td>
+                     <td>{{$classes->period}}</td>
+                     <td><a href="/teacher/attendance/{{$classes->classes_no}}/{{$date}}/{{$period}}/edit">Take Attendance</a></td>
                  </tr>
              @endforeach
         </tbody>

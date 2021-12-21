@@ -182,7 +182,12 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
             $selected_class = request('selected_class');
         }
 
-        $included_students = PlottedClassesController::getStudentsIncludedByClass($selected_class);
+        $selected_period = "08:00 AM - 09:00 AM";
+        if(request()->has('selected_period')){
+            $selected_period = request('selected_period');
+        }
+
+        $included_students = PlottedClassesController::getStudentsIncludedByClass($selected_class, $selected_period);
 
         $included_students_id = [];
         foreach($included_students as $student){
@@ -192,7 +197,8 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
         return view('plot-class', [
             'class_options' => $class_options,
             'selected_class' => $selected_class,
-            'student_options' => PlottedClassesController::getStudentsExcludedIn($included_students_id),
+            'selected_period' => $selected_period,
+            'student_options' => PlottedClassesController::getStudentsExcludedIn($included_students_id, $selected_period),
             'student_table_results' => $included_students
         ]);
 
@@ -201,8 +207,10 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
     Route::post('admin/plot-class', function(){
 
         $class_options = ClassesController::getNumAndName();
+        $selected_class = request('selected_class');
+        $selected_period = request('selected_period');
 
-        $included_students = PlottedClassesController::getStudentsIncludedByClass(request('selected_class'));
+        $included_students = PlottedClassesController::getStudentsIncludedByClass($selected_class, $selected_period);
 
         $included_students_id = [];
         foreach($included_students as $student){
@@ -210,9 +218,10 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
         }
 
         return view('plot-class', [
-            'class_options' => $class_options,
-            'selected_class' => request('selected_class'),
-            'student_options' => PlottedClassesController::getStudentsExcludedIn($included_students_id),
+            'class_options'   => $class_options,
+            'selected_class'  => $selected_class,
+            'selected_period' => $selected_period,
+            'student_options' => PlottedClassesController::getStudentsExcludedIn($included_students_id, $selected_period),
             'student_table_results' => $included_students
         ]);
 
@@ -231,6 +240,12 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
             $selected_teacher = request('selected_teacher');
         }
 
+        $selected_period = "08:00 AM - 09:00 AM";
+
+        if(request()->has('selected_period')){
+            $selected_period = request('selected_period');
+        }
+
         $included_classes = PlottedClassesController::getClassesByTeacher($selected_teacher);
 
         $included_classes_id = [];
@@ -238,11 +253,18 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
             $included_classes_id [] = $class->classes_no;
         }
 
+        $result = '';
+        if(request()->has('result')){
+            $result = request('result');
+        }
+
         return view('plot-teacher', [
-            'teacher_options' => $teacher_options,
-            'selected_teacher' => $selected_teacher,
-            'class_options' => PlottedClassesController::getClassesExludedIn($included_classes_id, $selected_teacher),
-            'class_table_results' => $included_classes
+            'teacher_options'     => $teacher_options,
+            'selected_teacher'    => $selected_teacher,
+            'selected_period'    => $selected_period,
+            'class_options'       => ClassesController::show(),
+            'class_table_results' => $included_classes,
+            'result' => $result
         ]);
 
     })->name('plot-teacher-list');
@@ -259,11 +281,24 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
             $included_classes_id [] = $class->classes_no;
         }
 
+        $selected_period = "08:00 AM - 09:00 AM";
+
+        if(request()->has('selected_period')){
+            $selected_period = request('selected_period');
+        }
+
+        $result = '';
+        if(request()->has('result')){
+            $result = request('result');
+        }
+
         return view('plot-teacher', [
             'teacher_options'     => $teacher_options,
             'selected_teacher'    => request('selected_teacher'),
-            'class_options'       => PlottedClassesController::getClassesExludedIn($included_classes_id, request('selected_teacher')),
-            'class_table_results' => $included_classes
+            'selected_period'    => $selected_period,
+            'class_options'       => ClassesController::show(),
+            'class_table_results' => $included_classes,
+            'result' => $result
         ]);
 
     });
@@ -282,20 +317,23 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
     Route::get('admin/plot-class/delete', 'PlottedClassesController@deletePlottedClass');
     Route::get('admin/plot-teacher/delete', 'PlottedClassesController@deletePlottedTeacher');
 
-    Route::get('teacher/attendance/{class_no}/{selected_date}/edit', function($class_no, $selected_date){
+    Route::get('teacher/attendance/{class_no}/{selected_date}/{period}/edit', function($class_no, $selected_date, $period){
 
         $classes    = new ClassesController;
         $attendance = new AttendanceController;
         
-        $date = date('Y/m/d', strtotime(urldecode($selected_date)));
+        $date   = date('Y/m/d', strtotime(urldecode($selected_date)));
+        $period = urldecode($period);
 
-        $result          = $attendance->getAttendanceByDateAndClass($date, $class_no);
-        $selected_class  = $classes->getClassInfo($class_no);
+        list($students, $attendance) = $attendance->getAttendanceByDatePeriodAndClass($date, $period, $class_no);
+        $selected_class          = $classes->getClassInfo($class_no);
 
         return view('attendance-edit', [
-            'result'         => $result,
-            'selected_class' => $selected_class,
-            'selected_date'  => $date
+            'students'          => $students,
+            'attendance'          => $attendance,
+            'selected_class'  => $selected_class,
+            'selected_date'   => $date,
+            'selected_period' => $period
         ]);
     })->name('attendance.edit');
 

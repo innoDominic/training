@@ -50,8 +50,6 @@ class LoginController extends Controller
         $user = User::where('user_name', $request->input('user_name'))->first();
 
         if($user->count() > 0 && $user->password === $request->input('password')){
-
-            #$user_find = User::find($user->user_no);
         
             $access_token = $user->createToken('authToken')->accessToken;
             return response([

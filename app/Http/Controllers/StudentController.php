@@ -104,10 +104,10 @@ class StudentController extends Controller
 
         $user->where('user_no', $request->input('user_no'))
         ->update([
-            'user_name' => $request->input('user_name'),
-            'password' => $request->input('password'),
+            'user_name'  => $request->input('user_name'),
+            'password'   => $request->input('password'),
             'first_name' => $request->input('first_name'),
-            'last_name' => $request->input('last_name'),
+            'last_name'  => $request->input('last_name'),
         ]);
 
         $student = new Student;
@@ -125,12 +125,12 @@ class StudentController extends Controller
     }
 
     public function destroy($user_no){
-        $user = new User;
-        $student = new Student;
+        $user            = new User;
+        $student         = new Student;
         $plotted_classes = new PlottedClasses;
-        $attendance = new Attendance;
+        $attendance      = new Attendance;
 
-        $plotted_no = $plotted_classes->select('plot_no')->where('user_no', $user_no)->get('plot_no')->toArray();
+        $plotted_no   = $plotted_classes->select('plot_no')->where('user_no', $user_no)->get('plot_no')->toArray();
         $plotted_nums = [];
 
         foreach($plotted_no as $plot_no){
@@ -178,11 +178,11 @@ class StudentController extends Controller
             $user = new User;
             $student = new Student;
     
-            $user->user_name = $csvValues[1];
-            $user->password = $csvValues[4];
+            $user->user_name  = $csvValues[1];
+            $user->password   = $csvValues[4];
             $user->first_name = $csvValues[2];
-            $user->last_name = $csvValues[3];
-            $user->user_type = 2;
+            $user->last_name  = $csvValues[3];
+            $user->user_type  = 2;
             $user->save();
     
             $student->student_id = $csvValues[0];
@@ -252,7 +252,6 @@ class StudentController extends Controller
     }
 
     public function checkValuesIfEmpty(Request $request){
-
         $input_names = ['student_id', 'user_name', 'password', 'first_name', 'last_name'];
 
         foreach($input_names as $name){

@@ -62,40 +62,32 @@ class AttendanceController extends Controller
 
         if($success_count > 0 && $success_count == $count){
             $selected_date = urlencode(urlencode($selected_date));
+            $selected_period = urlencode(urlencode($request->input('attendance_period')));
 
             return redirect()->route('attendance.edit', [
                 'class_no' => $request->input('selected_class'),
-                'selected_date' => $selected_date
+                'selected_date' => $selected_date,
+                'period' => $selected_period
             ]);
         }else{
             dd("One of the attendance was not correctly saved, please try again");
         }
     }
 
-    public function getAttendanceByDateAndClass($date, $class_no){
+    public function getAttendanceByDatePeriodAndClass($date, $period, $class_no){
         $attendance = new Attendance;
 
-        $check_attendance = $attendance->join('plotted_classes', 'plotted_classes.plot_no', '=', 'attendance.plot_no')
+        $plotted_classes = new PlottedClassesController;
+        $res1 = $plotted_classes->getStudentsIncludedByClass($class_no, $period);
+
+        $res2 = $attendance->select('plot_class.plot_no', 'attendance.att_status')
+        ->join('plotted_classes as plot_class', 'plot_class.plot_no', '=', 'attendance.plot_no')
+        ->join('student', 'student.user_no', '=', 'plot_class.user_no')
         ->where('attendance.att_date', $date)
-        ->where('plotted_classes.classes_no', $class_no)
+        ->where('plot_class.classes_no', $class_no)
         ->get();
 
-        if(count($check_attendance) > 0){
-
-            return $attendance->select('user.first_name', 'user.last_name', 'student.student_id', 'plot_class.user_no', 'plot_class.plot_no', 'attendance.att_status')
-            ->join('plotted_classes as plot_class', 'plot_class.plot_no', '=', 'attendance.plot_no')
-            ->join('student', 'student.user_no', '=', 'plot_class.user_no')
-            ->join('user', 'user.user_no', '=', 'student.user_no')
-            ->where('attendance.att_date', $date)
-            ->where('plot_class.classes_no', $class_no)
-            ->get();
-
-        }else{
-
-           $plotted_classes = new PlottedClassesController;
-           return $plotted_classes->getStudentsIncludedByClass($class_no);
-
-        }
+        return array($res1, $res2);
     }
 
     public function show(){
@@ -147,7 +139,6 @@ class AttendanceController extends Controller
     }
 
     public function getClassNameAndAttendance($student_user_no = null){
-        $user_no = session()->get('user_no');
         $attendance = new Attendance;
 
         if($student_user_no != null){
@@ -160,6 +151,8 @@ class AttendanceController extends Controller
             ->orderBy('attendance.att_date', 'ASC')->get();
 
         }else{
+
+            $user_no = session()->get('user_no');
 
             $query = $attendance->select('class.classes_name', 'class.classes_no', 'attendance.att_date', 'attendance.att_status')
             ->join('plotted_classes as p_class', 'p_class.plot_no', '=', 'attendance.plot_no')

@@ -86,16 +86,16 @@ class TeacherController extends Controller
             $user = new User;
             $teacher = new Teacher;
     
-            $user->user_name = $csvValues[1];
-            $user->password = $csvValues[4];
-            $user->first_name = $csvValues[2];
-            $user->last_name = $csvValues[3];
-            $user->user_type = 1;
+            $user->user_name   =  $csvValues[1];
+            $user->password    =  $csvValues[4];
+            $user->first_name  =  $csvValues[2];
+            $user->last_name   =  $csvValues[3];
+            $user->user_type   =  1;
             $user->save();
     
-            $teacher->teacher_id = $csvValues[0];
+            $teacher->teacher_id    = $csvValues[0];
             $teacher->teacher_title = $csvValues[5];
-            $teacher->user_no = $user->user_no;
+            $teacher->user_no       = $user->user_no;
             $teacher->save();
 
             return redirect()->route('teacher-list', [
@@ -117,7 +117,7 @@ class TeacherController extends Controller
         $empty_field = $this->checkValuesIfEmpty($request);
         if( $empty_field !== null){
             return view('teacher-edit', [
-                'result' => 'Please fill up ' . $empty_field,
+                'result'       => 'Please fill up ' . $empty_field,
                 'teacher_info' => $this->getTeacherInfo($request->input('user_no'))
             ]);
         }
@@ -140,22 +140,22 @@ class TeacherController extends Controller
 
         $user->where('user_no', $request->input('user_no'))
         ->update([
-            'user_name' => $request->input('user_name'),
-            'password' => $request->input('password'),
+            'user_name'  => $request->input('user_name'),
+            'password'   => $request->input('password'),
             'first_name' => $request->input('first_name'),
-            'last_name' => $request->input('last_name'),
+            'last_name'  => $request->input('last_name'),
         ]);
 
         $teacher = new Teacher;
 
         $teacher->where('user_no', $request->input('user_no'))
         ->update([
-            'teacher_id' => $request->input('teacher_id'),
+            'teacher_id'    => $request->input('teacher_id'),
             'teacher_title' => $request->input('title')
         ]);
 
         return view('teacher-edit', [
-            'result' => 'Saved',
+            'result'       => 'Saved',
             'teacher_info' => $this->getTeacherInfo($request->input('user_no'))
         ]);
 
@@ -167,45 +167,45 @@ class TeacherController extends Controller
 
         if($request->has('srchTeacherByName') && $request->has('srchTeacherByClass')){
 
-             $name = $request->input('srchTeacherByName');
-             $class = $request->input('srchTeacherByClass');
+            $name = $request->input('srchTeacherByName');
+            $class = $request->input('srchTeacherByClass');
 
-             if(empty($name) && empty($class)){
+            if(empty($name) && empty($class)){
              
-                 return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id')
-                 ->join('user', 'user.user_no', '=', 'teacher.user_no')->paginate(3)->withPath('/admin/teacher');
+                return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id')
+                ->join('user', 'user.user_no', '=', 'teacher.user_no')->paginate(3)->withPath('/admin/teacher');
 
-             }else if(!empty($name) && empty($class)){
+            }else if(!empty($name) && empty($class)){
 
-                  return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id')
-                  ->join('user', 'user.user_no', '=', 'teacher.user_no')
-                  ->where('user.first_name', 'like', '%' . $name . '%')
-                  ->orWhere('user.last_name', 'like', '%' . $name . '%')
-                  ->paginate(3)->withPath('/admin/teacher');
+                return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id')
+                ->join('user', 'user.user_no', '=', 'teacher.user_no')
+                ->where('user.first_name', 'like', '%' . $name . '%')
+                ->orWhere('user.last_name', 'like', '%' . $name . '%')
+                ->paginate(3)->withPath('/admin/teacher');
 
-             }else if(empty($name) && !empty($class)){
+            }else if(empty($name) && !empty($class)){
                  
-                  return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id', 'class.classes_name')
-                  ->join('user', 'user.user_no', '=', 'teacher.user_no')
-                  ->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
-                  ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
-                  ->where('class.classes_no', $class)
-                  ->paginate(3)->withPath('/admin/teacher');
+                return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id', 'class.classes_name')
+                ->join('user', 'user.user_no', '=', 'teacher.user_no')
+                ->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
+                ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
+                ->where('class.classes_no', $class)
+                ->paginate(3)->withPath('/admin/teacher');
 
-             }else if(!empty($name) && !empty($class)){
+            }else if(!empty($name) && !empty($class)){
 
-                 return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id', 'class.classes_name')
-                 ->join('user', 'user.user_no', '=', 'teacher.user_no')
-                 ->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
-                 ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
-                 ->where('class.classes_no', $class)
-                 ->where(function ($teacher) use ($name) {
-                      $teacher->where('user.first_name', 'like', '%' . $name . '%')
-                      ->orWhere('user.last_name', 'like', '%' . $name . '%');
-                 }) 
-                 ->paginate(3)->withPath('/admin/teacher');
+                return $teacher->select('user.first_name', 'user.last_name', 'user.user_no', 'teacher.teacher_title', 'teacher.teacher_id', 'class.classes_name')
+                ->join('user', 'user.user_no', '=', 'teacher.user_no')
+                ->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
+                ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
+                ->where('class.classes_no', $class)
+                ->where(function ($teacher) use ($name) {
+                    $teacher->where('user.first_name', 'like', '%' . $name . '%')
+                    ->orWhere('user.last_name', 'like', '%' . $name . '%');
+                }) 
+                ->paginate(3)->withPath('/admin/teacher');
 
-             }
+            }
 
         }
 
