@@ -64,6 +64,13 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
             }
         }
 
+        $class_name = '';
+        foreach($class_options as $class){
+            if($class->classes_no == $selected_class){
+                $class_name = $class->classes_name;
+            }
+        }
+
         $classes_under_students = [];
         $classes_under_teachers = [];
 
@@ -78,6 +85,7 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
             'class_options'           =>  $class_options,
             'selected_teacher'        =>  $selected_teacher,
             'selected_teacher_name'   =>  $teacher_name,
+            'selected_class_name'     =>  $class_name,
             'selected_class'          =>  $selected_class,
             'student_to_search'       =>  $student_to_search,
             'classes_under_students'  =>  $classes_under_students,
@@ -295,7 +303,7 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
         return view('plot-teacher', [
             'teacher_options'     => $teacher_options,
             'selected_teacher'    => request('selected_teacher'),
-            'selected_period'    => $selected_period,
+            'selected_period'     => $selected_period,
             'class_options'       => ClassesController::show(),
             'class_table_results' => $included_classes,
             'result' => $result
@@ -329,8 +337,8 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
         $selected_class          = $classes->getClassInfo($class_no);
 
         return view('attendance-edit', [
-            'students'          => $students,
-            'attendance'          => $attendance,
+            'students'        => $students,
+            'attendance'      => $attendance,
             'selected_class'  => $selected_class,
             'selected_date'   => $date,
             'selected_period' => $period

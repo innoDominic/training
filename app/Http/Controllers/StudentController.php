@@ -271,156 +271,57 @@ class StudentController extends Controller
         $request->has('srchStudentByClass') && 
         $request->has('srchStudentByTeacher') ) {
 
-            $student_name = $request->input('srchStudentByName');
-            $selected_class = $request->input('srchStudentByClass');
+            $selected_class   = $request->input('srchStudentByClass');
             $selected_teacher = $request->input('srchStudentByTeacher');
+            $student_name     = trim($request->input('srchStudentByName'));
 
-            if(empty($student_name) && 
-            empty($selected_class) && 
-            empty($selected_teacher)) {
+            $student = $student->select('student.user_no', 'student.student_id', 'user.first_name', 'user.last_name')
+            ->join('user', 'user.user_no', '=', 'student.user_no');
 
-                return $student->select('student.user_no','student.student_id', 'user.first_name', 'user.last_name')
-                ->join('user as user', 'user.user_no', '=', 'student.user_no')->paginate(3)->withPath('/admin/student');
-
-            }else if(!empty($student_name) && 
-            empty($selected_class) && 
-            empty($selected_teacher)) {
-
-                $name = '%' . $student_name . '%';
-
-                return $student->select('student.user_no','student.student_id', 'user.first_name', 'user.last_name')
-                ->join('user as user', 'user.user_no', '=', 'student.user_no')
-                ->where('user.first_name', 'like', $name)
-                ->orWhere('user.last_name', 'like', $name)->paginate(3)->withPath('/admin/student');
-
-            }else if(empty($student_name) && 
-            !empty($selected_class) && 
-            empty($selected_teacher)) {
-                
-                return $student->select('student.user_no','student.student_id', 'user.first_name', 'user.last_name', 'class.classes_name', 'class.classes_no')
-                ->join('user as user', 'user.user_no', '=', 'student.user_no')
-                ->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
-                ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
-                ->where('class.classes_no', '=', $selected_class)->paginate(3)->withPath('/admin/student');
-
-            }else if(empty($student_name) && 
-            empty($selected_class) && 
-            !empty($selected_teacher)) {
-
-                $classes_list = PlottedClassesController::getClassesByTeacher($selected_teacher);
-                $classes_ids = [];
-
-                foreach($classes_list as $class){
-                    $classes_ids [] = $class->classes_no;
-                }
-
-                return $student->select('student.user_no','student.student_id', 'user.first_name', 'user.last_name', 'class.classes_name', 'class.classes_no')
-                ->join('user as user', 'user.user_no', '=', 'student.user_no')
-                ->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
-                ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
-                ->orderBy('class.classes_no', 'ASC')
-                ->whereIn('plot_class.classes_no', $classes_ids)
-                ->where('user.user_type', 2)
-                ->paginate(3)->withPath('/admin/student');
-            
-            }else if(empty($student_name) && 
-            !empty($selected_class) && 
-            !empty($selected_teacher)) {
-
-                $classes_list = PlottedClassesController::getClassesByTeacher($selected_teacher);
-                $classes_ids = [];
-
-                foreach($classes_list as $class){
-                    if($class->classes_no == $selected_class){
-                        $classes_ids [] = $class->classes_no; 
-                    }
-                }
-
-                return $student->select('student.user_no','student.student_id', 'user.first_name', 'user.last_name', 'class.classes_name', 'class.classes_no')
-                ->join('user as user', 'user.user_no', '=', 'student.user_no')
-                ->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
-                ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
-                ->orderBy('class.classes_no', 'ASC')
-                ->whereIn('plot_class.classes_no', $classes_ids)
-                ->where('user.user_type', 2)
-                ->paginate(3)->withPath('/admin/student');
-
-            }else if(!empty($student_name) && 
-            !empty($selected_class) && 
-            !empty($selected_teacher)) {
-
-                $name = '%' . $student_name . '%';
-            
-                $classes_list = PlottedClassesController::getClassesByTeacher($selected_teacher);
-                $classes_ids = [];
-
-                foreach($classes_list as $class){
-                    if($class->classes_no == $selected_class){
-                        $classes_ids [] = $class->classes_no; 
-                    }
-                }
-
-                return $student->select('student.user_no','student.student_id', 'user.first_name', 'user.last_name', 'class.classes_name', 'class.classes_no')
-                ->join('user as user', 'user.user_no', '=', 'student.user_no')
-                ->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
-                ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
-                ->orderBy('class.classes_no', 'ASC')
-                ->whereIn('plot_class.classes_no', $classes_ids)
-                ->where('user.user_type', 2)
-                ->where('user.first_name', 'like', $name)
-                ->orWhere('user.last_name', 'like', $name)
-                ->paginate(3)->withPath('/admin/student');
-
-            }else if(!empty($student_name) && 
-            !empty($selected_class) && 
-            empty($selected_teacher)) {
-
-                $name = '%' . $student_name . '%';
-
-                return $student->select('student.user_no','student.student_id', 'user.first_name', 'user.last_name', 'class.classes_name', 'class.classes_no')
-                ->join('user as user', 'user.user_no', '=', 'student.user_no')
-                ->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
-                ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
-                ->where('class.classes_no', '=', $selected_class)
-                ->where(function ($student) use ($name) {
-                     $student->where('user.first_name', 'like', $name)
-                     ->orWhere('user.last_name', 'like', $name);
-                }) 
-                ->paginate(3)->withPath('/admin/student');
-
-            }else if(!empty($student_name) && 
-            empty($selected_class) && 
-            !empty($selected_teacher)) {
-
-                $name = '%' . $student_name . '%';
-
-                $classes_list = PlottedClassesController::getClassesByTeacher($selected_teacher);
-                $classes_ids = [];
-
-                foreach($classes_list as $class){
-                    $classes_ids [] = $class->classes_no;
-                }
-
-                return $student->select('student.user_no','student.student_id', 'user.first_name', 'user.last_name', 'class.classes_name', 'class.classes_no')
-                ->join('user as user', 'user.user_no', '=', 'student.user_no')
-                ->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
-                ->join('classes as class', 'class.classes_no', '=', 'plot_class.classes_no')
-                ->orderBy('class.classes_no', 'ASC')
-                ->whereIn('class.classes_no', $classes_ids)
-                ->where(function ($student) use ($name) {
-                          $student->where('user.first_name', 'like', $name)
-                          ->orWhere('user.last_name', 'like', $name);
-                     })  
-                ->where('user.user_type', 2)
-                ->paginate(3)->withPath('/admin/student');
-
+            #Query Build - Additional Selection
+            if(!empty($selected_class)){
+                $student = $student->addSelect('classes.classes_no', 'classes.classes_name');
             }
+
+            #Query Build - Join
+            if(!empty($selected_class) || !empty($selected_teacher)){
+                $student = $student->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
+                ->join('classes', 'classes.classes_no', '=', 'plot_class.classes_no');
+            }
+
+            #Query Build - Where Conditions
+            if(!empty($selected_class)){
+                $student = $student->where('classes.classes_no', '=', $selected_class);
+            }
+
+            if(!empty($selected_teacher)){
+                $classes_list = PlottedClassesController::getClassesByTeacher($selected_teacher);
+                $classes_ids = [];
+
+                foreach($classes_list as $class){
+                    $classes_ids [] = $class->classes_no;
+                }
+
+                $student = $student->whereIn('plot_class.classes_no', $classes_ids)
+                ->where('user.user_type', 2);
+            }
+
+            if(!empty($student_name)){
+                $name = '%' . $student_name . '%';
+
+                $student = $student->where(function ($student) use ($name) {
+                    $student->where('user.first_name', 'like', $name)
+                    ->orWhere('user.last_name', 'like', $name);
+               }) ;
+            }
+
+            return $student->paginate(3)->withPath('/admin/student');
 
         }
 
-        return $student->select('student.user_no','student.student_id', 'user.first_name', 'user.last_name')
-            ->join('user as user', 'user.user_no', '=', 'student.user_no')
-            ->paginate(3)->withPath('/admin/student');
+        return $student->select('student.user_no', 'student.student_id', 'user.first_name', 'user.last_name')
+        ->join('user', 'user.user_no', '=', 'student.user_no')->paginate(3)->withPath('/admin/student');
+
     }
 
     public function getStudentInfo($id){

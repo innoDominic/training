@@ -50,37 +50,44 @@
     <table class="table" style="border: solid 1px black; border-collapse: collapse; margin-top: 40px; width: 100%;">
         <thead>
             <tr>
-                <th>Student ID</th>
+                <th>Teacher ID</th>
                 <th>Full Name</th>
                 <th>Class</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-             @foreach($teacher_table_results as $teacher)
-                 <tr>
-                     <td>{{$teacher->teacher_id}}</td>
-                     <td>{{$teacher->teacher_title}} {{$teacher->first_name}} {{$teacher->last_name}}</td>
-                     <td>
-                      <?php 
-                          if(!empty($included_classes_under_teacher)){
-                              $count = count($included_classes_under_teacher['teacher_no']);
-                              $class_names = '';
-                              for($i = 0; $i < $count; $i++){
-                                  if($teacher->user_no == $included_classes_under_teacher['teacher_no'][$i]){
-                                      $class_names .= $included_classes_under_teacher['class_name'][$i] . ', ';
-                                  }
-                              }
+            @foreach($teacher_table_results as $teacher)
+                
+                <tr>
+                    <td>{{$teacher->teacher_id}}</td>
+                    <td>{{$teacher->teacher_title}} {{$teacher->first_name}} {{$teacher->last_name}}</td>
+                    <td>
+                    <?php 
+                        if(!empty($included_classes_under_teacher)){
+                            $count = count($included_classes_under_teacher['teacher_no']);
+                            $class_names = [];
+                            for($i = 0; $i < $count; $i++){
+                                if($teacher->user_no == $included_classes_under_teacher['teacher_no'][$i]){
+                                    $class_names []= $included_classes_under_teacher['class_name'][$i];
+                                }
+                            }
 
-                              echo rtrim($class_names, ', ');
-                          }else{
-                              echo $teacher->classes_name;
-                          }
-                      ?>
-                     </td>
-                     <td><a href="/admin/teacher/edit?id={{$teacher->user_no}}">Edit</a> | <a href="/admin/teacher/delete?id={{$teacher->user_no}}">Delete</a></td>
-                 </tr>
-             @endforeach
+                            $class_names = array_unique($class_names);
+                            $classes_to_show = '';
+                            foreach($class_names as $class){
+                                $classes_to_show .= $class . ', ';
+                            }
+
+                            echo rtrim($classes_to_show, ', ');
+                        }else{
+                            echo $teacher->classes_name . ' (' . $teacher->period . ')';
+                        }
+                    ?>
+                    </td>
+                    <td><a href="/admin/teacher/edit?id={{$teacher->user_no}}">Edit</a> | <a href="/admin/teacher/delete?id={{$teacher->user_no}}">Delete</a></td>
+                </tr>
+            @endforeach
         </tbody>
     </table>
     <div class="paginate-nav">{{$teacher_table_results->onEachSide(3)->appends($_GET)->links()}}</div>

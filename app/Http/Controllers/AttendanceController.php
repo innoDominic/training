@@ -9,6 +9,8 @@ use App\Http\Controllers\PlottedClassesController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\StudentController;
 
+use Carbon\Carbon;
+
 class AttendanceController extends Controller
 {
     public function index(){
@@ -141,6 +143,9 @@ class AttendanceController extends Controller
     public function getClassNameAndAttendance($student_user_no = null){
         $attendance = new Attendance;
 
+        $dateS = Carbon::now()->subMonth(3);
+        $dateE = Carbon::now(); 
+
         if($student_user_no != null){
 
             $query = $attendance->select('class.classes_name', 'class.classes_no', 'attendance.att_date', 'attendance.att_status')
@@ -148,6 +153,7 @@ class AttendanceController extends Controller
             ->join('user', 'user.user_no', '=', 'p_class.user_no')
             ->join('classes as class', 'class.classes_no', '=', 'p_class.classes_no')
             ->where('user.user_no', $student_user_no)
+            ->whereBetween('att_date',[$dateS,$dateE])
             ->orderBy('attendance.att_date', 'ASC')->get();
 
         }else{
@@ -158,6 +164,7 @@ class AttendanceController extends Controller
             ->join('plotted_classes as p_class', 'p_class.plot_no', '=', 'attendance.plot_no')
             ->join('classes as class', 'class.classes_no', '=', 'p_class.classes_no')
             ->where('attendance.teacher_no', $user_no)
+            ->whereBetween('att_date',[$dateS,$dateE])
             ->orderBy('attendance.att_date', 'ASC')->get();
 
         }

@@ -69,25 +69,27 @@
 <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center; margin-top:40px;">
     
      <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/plot-teacher/plot-class-teacher">
-         <div style="width:50%;">
-             <label>
-                 Add Class:
-                 <select type="text" class="class_no" name="class_no" style="border: solid 1px black;">
-                     @foreach($class_options as $class)
-                         <option value="{{$class->classes_no}}">{{$class->classes_name}}</option>
-                     @endforeach
-                 </select>
-                 @csrf
-             </label>
-             <input type="text" class="selected_teacher_to_plot" name="selected_teacher_to_plot" value="{{$selected_teacher}}" hidden />
+        <div style="width:33%;">
+            <label>
+                Add Class:
+                <select type="text" class="class_no" name="class_no" style="border: solid 1px black;">
+                    @foreach($class_options as $class)
+                        <option value="{{$class->classes_no}}">{{$class->classes_name}}</option>
+                    @endforeach
+                </select>
+                @csrf
+            </label>
+            <input type="text" class="selected_teacher_to_plot" name="selected_teacher_to_plot" value="{{$selected_teacher}}" hidden />
 
-             <input type="text" class="selected_period_to_plot" name="selected_period_to_plot" value="{{$selected_period}}" hidden />   
-             @csrf 
-         </div>
-         <div style="width: 50%; display: flex; flex-direction: column; justify-content: flex-end;">
-             <button style="max-width: 200px; margin: 0 auto; max-height: 50px; padding: 10px;" class="addClassBtn">Add</button>
-             <h3>{{$result}}</h3>
-         </div>
+            <input type="text" class="selected_period_to_plot" name="selected_period_to_plot" value="{{$selected_period}}" hidden />   
+            @csrf 
+        </div>
+        <div style="width: 33%; display: flex; flex-direction: column; justify-content: center;">
+            <button style="max-width: 200px; margin: 0; margin-right: auto; max-height: 50px; padding: 10px;" class="addClassBtn">Add</button>
+        </div>
+        <div style="width: 33%; display: flex; flex-direction: column; justify-content: flex-start;">
+            <h3 style="margin-top: 0px !important;">{{$result}}</h3>
+        </div>
      </form>
 
 </div>
