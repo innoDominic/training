@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Models\Classes;
+use App\Models\PlottedClasses;
+use App\Models\Attendance;
 
 class ClassesController extends Controller
 {
@@ -78,10 +81,26 @@ class ClassesController extends Controller
 
     }
 
-    public function delete(Request $request){
+    public function destroy($class_no){
         $class = new Classes;
+        $plotted_classes = new PlottedClasses;
+        $attendance = new Attendance;
 
-        $class->where('classes_no', '=', request('id'))->delete();
+        $plotted_no = $plotted_classes->select('plot_no')->where('classes_no', $class_no)->get('plot_no')->toArray();
+        $plotted_nums = [];
+
+        foreach($plotted_no as $plot_no){
+            $plotted_nums [] = $plot_no["plot_no"];
+        }
+
+        $attendance->whereIn('plot_no', $plotted_nums)->get()->each(function($att){
+            $att->delete();
+        });
+        $plotted_classes->where('classes_no', $class_no)->get()->each(function($plotted_class){
+            $plotted_class->delete();
+        });
+
+        $class->where('classes_no', '=', $class_no)->delete();
 
         return redirect()->route('class-list');
     }

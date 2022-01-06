@@ -15,7 +15,6 @@ class CreatePlottedClassesTable extends Migration
     {
         Schema::create('plotted_classes', function (Blueprint $table) {
             $table->id('plot_no');
-            $table->timestamps();
             $table->integer('class_no');
             $table->integer('user_no');
         });

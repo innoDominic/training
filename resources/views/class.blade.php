@@ -18,8 +18,14 @@
         <tbody>
              @foreach($class_table_results as $classes)
                  <tr>
-                     <td>{{$classes->classes_name}}</td>
-                     <td><a href="/admin/class/edit?id={{$classes->classes_no}}">Edit</a> | <a href="/admin/class/delete?id={{$classes->classes_no}}">Delete</a></td>
+                    <td>{{$classes->classes_name}}</td>
+                    <td style="display:flex; flex-direction: row; justify-content: space-evenly;"><a href="/admin/class/edit?id={{$classes->classes_no}}">Edit</a> | 
+                        <form action="{{ route('class.destroy', $classes->classes_no) }}" method="POST">
+                            {{ method_field('DELETE') }}
+                            {{ csrf_field() }}
+                            <button style="color: white; background-color: red; cursor:pointer;">Delete</button>
+                        </form>
+                    </td>
                  </tr>
              @endforeach
         </tbody>

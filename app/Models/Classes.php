@@ -11,6 +11,7 @@ class Classes extends Model
 
     protected $table = 'classes';
     public $timestamps = false;
+    protected $primaryKey = 'classes_no';
 
     protected $fillable = [
      'classes_name'

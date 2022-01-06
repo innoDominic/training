@@ -90,13 +90,15 @@ class StudentController extends Controller
 
         if($this->checkIfUsernameExist($request->input('user_name'), $request->input('user_no'))){
             return view('student-edit', [
-                'result' => 'Username Already exists'
+                'result' => 'Username Already exists',
+                'student_info' => $this->getStudentInfo($request->input('user_no'))
             ]);
         }
 
         if($this->checkIfStudentIdExist($request->input('student_id'), $request->input('user_no'))){
             return view('student-edit', [
-                'result' => 'Student ID Already exists'
+                'result' => 'Student ID Already exists',
+                'student_info' => $this->getStudentInfo($request->input('user_no'))
              ]);
         }
 

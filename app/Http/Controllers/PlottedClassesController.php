@@ -8,6 +8,7 @@ use App\Models\PlottedClasses;
 use App\Models\Classes;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\Attendance;
 
 class PlottedClassesController extends Controller
 {
@@ -130,30 +131,40 @@ class PlottedClassesController extends Controller
 
     }
     
-    public function deletePlottedClass(Request $request){
+    public function deletePlottedClass($plot_no, $selected_class){
         
         $plot_class = new PlottedClasses;
+        $attendance = new Attendance;
 
-        $plot_class->where('user_no', $request->input('id'))
-        ->where('classes_no', $request->input('class'))
-        ->where('period', $request->input('period'))->delete();
+        $attendance->where('plot_no', $plot_no)->get()->each(function($att){
+            $att->delete();
+        });
+        $plot_class->where('plot_no', $plot_no)->delete();
 
         return redirect()->route('plot-class-list', [
-            'selected_class' => $request->input('class')
+            'selected_class' => $selected_class
         ]);
 
     }
 
-    public function deletePlottedTeacher(Request $request){
+    public function deletePlottedTeacher($class_no, $selected_teacher, $selected_period){
         
         $plot_class = new PlottedClasses;
+        $attendance = new Attendance;
 
-        $plot_class->where('user_no', $request->input('id'))
-        ->where('classes_no', $request->input('class'))
-        ->where('period', $request->input('period'))->delete();
+        $selected_plotted_class = $plot_class->select("plot_no")
+        ->where('classes_no', $class_no)
+        ->where('user_no', $selected_teacher)
+        ->where('period', $selected_period)->first();
+
+        $attendance->where('plot_no', $selected_plotted_class->plot_no)->get()->each(function($att){
+            $att->delete();
+        });
+
+        $plot_class->where('plot_no', $selected_plotted_class->plot_no)->delete();
 
         return redirect()->route('plot-teacher-list', [
-            'selected_teacher' => $request->input('id')
+            'selected_teacher' => $selected_teacher
         ]);
 
  }

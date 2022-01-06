@@ -31,7 +31,7 @@
         </style>
     </head>
     <body class="antialiased">
-        <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0" style="flex-direction: column !important; justify-content: flex-start !important; padding-top: 40px;">
+        <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0" style="flex-direction: column !important; justify-content: flex-start !important; padding-top: 40px; background-color:#2d3748;">
 
             <div style="width: 100%; margin-bottom:20px;"><a href="/logout" style="float: right; color: white; padding-right:20px">Logout</a></div>
 

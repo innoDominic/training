@@ -81,11 +81,19 @@
 
                             echo rtrim($classes_to_show, ', ');
                         }else{
-                            echo $teacher->classes_name . ' (' . $teacher->period . ')';
+                            if($teacher->period != null){
+                                echo $teacher->classes_name . ' (' . $teacher->period . ')';
+                            }
                         }
                     ?>
                     </td>
-                    <td><a href="/admin/teacher/edit?id={{$teacher->user_no}}">Edit</a> | <a href="/admin/teacher/delete?id={{$teacher->user_no}}">Delete</a></td>
+                    <td style="display:flex; flex-direction: row; justify-content: space-evenly;"><a href="/admin/teacher/edit?id={{$teacher->user_no}}">Edit</a> | 
+                        <form action="{{ route('teacher.destroy', $teacher->user_no) }}" method="POST">
+                            {{ method_field('DELETE') }}
+                            {{ csrf_field() }}
+                            <button style="color: white; background-color: red; cursor:pointer;">Delete</button>
+                        </form>
+                    </td>
                 </tr>
             @endforeach
         </tbody>

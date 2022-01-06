@@ -11,4 +11,6 @@ class PlottedClasses extends Model
 
     protected $table = 'plotted_classes';
     public $timestamps = false;
+    protected $primaryKey = 'plot_no';
+    
 }

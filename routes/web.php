@@ -314,16 +314,17 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
     Route::post('admin/teacher/create', 'TeacherController@create');
     Route::post('admin/teacher/edit', 'TeacherController@edit');
     Route::post('admin/teacher/create/csv', 'TeacherController@createWithCSV');
-    Route::get('admin/teacher/delete', 'TeacherController@delete');
+    Route::delete('admin/teacher/delete/{user_no}', 'TeacherController@destroy')->name('teacher.destroy');
 
     Route::post('admin/class/create', 'ClassesController@create');
     Route::post('admin/class/edit', 'ClassesController@edit');
-    Route::get('admin/class/delete', 'ClassesController@delete');
+    Route::delete('admin/class/delete/{class_no}', 'ClassesController@destroy')->name('class.destroy');
 
     Route::post('admin/plot-class/plot-class-student', 'PlottedClassesController@plotStudentToClass');
     Route::post('admin/plot-teacher/plot-class-teacher', 'PlottedClassesController@plotClassToTeacher');
-    Route::get('admin/plot-class/delete', 'PlottedClassesController@deletePlottedClass');
-    Route::get('admin/plot-teacher/delete', 'PlottedClassesController@deletePlottedTeacher');
+
+    Route::delete('admin/plot-class/delete/{plot_no}/{selected_class}', 'PlottedClassesController@deletePlottedClass')->name('plot_class.destroy');
+    Route::delete('admin/plot-teacher/delete/{class_no}/{selected_teacher}/{selected_period}', 'PlottedClassesController@deletePlottedTeacher')->name('plot_class_teacher.destroy');
 
     Route::get('teacher/attendance/{class_no}/{selected_date}/{period}/edit', function($class_no, $selected_date, $period){
 
@@ -334,7 +335,7 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
         $period = urldecode($period);
 
         list($students, $attendance) = $attendance->getAttendanceByDatePeriodAndClass($date, $period, $class_no);
-        $selected_class          = $classes->getClassInfo($class_no);
+        $selected_class              = $classes->getClassInfo($class_no);
 
         return view('attendance-edit', [
             'students'        => $students,

@@ -131,7 +131,7 @@ class TeacherController extends Controller
 
         if($this->checkIfTeacherIdExist($request->input('teacher_id'), $request->input('user_no'))){
             return view('teacher-edit', [
-                'result' => 'Student ID Already exists',
+                'result' => 'Teacher ID Already exists',
                 'teacher_info' => $this->getTeacherInfo($request->input('user_no'))
             ]);
         }
@@ -204,25 +204,25 @@ class TeacherController extends Controller
 
     }
 
-    public function delete(Request $request){
+    public function destroy($user_no){
         $user = new User;
         $teacher = new Teacher;
         $plotted_classes = new PlottedClasses;
         $attendance = new Attendance;
 
-        $plotted_no = $plotted_classes->select('plot_no')->where('user_no', $request->id)->get('plot_no')->toArray();
+        $plotted_no = $plotted_classes->select('plot_no')->where('user_no', $user_no)->get('plot_no')->toArray();
         $plotted_nums = [];
 
         foreach($plotted_no as $plot_no){
             $plotted_nums [] = $plot_no["plot_no"];
         }
 
-        $user->where('user_no', '=', $request->id)->delete();
-        $teacher->where('user_no', '=', $request->id)->delete();
+        $user->where('user_no', '=', $user_no)->delete();
+        $teacher->where('user_no', '=', $user_no)->delete();
         $attendance->whereIn('plot_no', $plotted_nums)->get()->each(function($att){
             $att->delete();
         });
-        $plotted_classes->where('user_no', '=', $request->id)->delete();
+        $plotted_classes->where('user_no', '=', $user_no)->delete();
 
         return redirect()->route('teacher-list');
     }

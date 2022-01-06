@@ -1,7 +1,7 @@
 @extends('layouts.layouts')
 
 @section('content')
-    <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
+    <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0" style="background-color:#2d3748;">
         <style>
             button, label{ margin: 0 auto; }
             button { max-width: 150px; width: 100%; margin-top: 20px; }

@@ -18,6 +18,7 @@
                 </tr>
             </thead>
             <tbody>
+                @php #dd($averages); @endphp
                 @foreach($averages as $class => $dates)
                     <tr>
                         <td>{{$class}}</td>
