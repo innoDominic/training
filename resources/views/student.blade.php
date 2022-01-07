@@ -74,88 +74,94 @@
         </thead>
         <tbody>
             @php
-                #dd($student_table_results);
-                $existing_row = [];
+                #dd($student_table_results, $periods);
+                $classes_no = [];
+                $classes_name = [];
             @endphp
             @foreach($student_table_results as $students)
-                    @if(!in_array($students->student_id . '-' . $selected_teacher_name . '-' . $selected_class, $existing_row))
-                        @php
-                            $existing_row [] = $students->student_id . '-' . $selected_teacher_name . '-' . $selected_class;
-                        @endphp
-                        <tr>
-                            <td>{{$students->student_id}}</td>
-                            <td>{{$students->first_name}} {{$students->last_name}}</td>
+                <tr>
+                    <td>{{$students->student_id}}</td>
+                    <td>{{$students->first_name}} {{$students->last_name}}</td>
 
-                            <td>
-                                <?php  
-                                    if($students->classes_name != null){
-                                        echo $selected_class_name;
-                                    }else{
-                                        $classes = [];
-                                        foreach($classes_under_students as $class){
-                                            if($class->user_no == $students->user_no){
-                                                $classes [] = $class->classes_name;
-                                            }
-                                        }
-                                        
-                                        $classes = array_unique($classes);
-                                        $classes_count = count($classes);
-                                        if($classes_count > 0){
-                                            
-                                            $classes_to_show = '';
-                                            foreach($classes as $class){
-                                                $classes_to_show .= $class . ', ';
-                                            }
-                                            echo rtrim($classes_to_show, ', ');
+                    <td>
+                        @if(empty($selected_class) && empty($selected_teacher))
 
-                                        }
-                                    }
-                                ?>
-                            </td>
+                            @foreach($periods as $p)
+                                @if($p->user_no == $students->user_no)
+                                    @foreach($class_options as $c)
+                                        @if($p->classes_no == $c->classes_no)
+                                            @php
+                                                $classes_name [] = $c->classes_name;
+                                                $classes_no [] = $c->classes_no
+                                            @endphp
+                                        @endif
+                                    @endforeach
+                                @endif
+                            @endforeach
 
-                            <td class="td-teacher-name">
-                            <?php  
-                                if($selected_teacher != ''){
-                                    echo $selected_teacher_name;
+                        @elseif(empty($selected_class) && !empty($selected_teacher))
+                            
+                            @php
+                                echo $students->classes_name;
+                                $classes_no [] = $students->classes_no
+                            @endphp
+
+                        @else
+                            {{$students->classes_name}}
+                        @endif
+
+                        <?php
+  
+                            $classes_name = array_values(array_unique($classes_name));
+                            $classes_count = count($classes_name);
+                            for($i = 0; $i <= $classes_count - 1; $i++){
+                                if($i == $classes_count - 1){
+                                    echo $classes_name[$i];
                                 }else{
-                                    $teachers = [];
-                                    foreach($classes_under_students as $class){
-                                        if($class->user_no === $students->user_no){
-                                            
-                                            foreach($classes_under_teachers as $teacher){
-                                                if($class->classes_no === $teacher->classes_no && $students->classes_no === null){
-                                                    $teachers [] = $teacher->last_name . ' ' . $teacher->first_name;        
-                                                }else if($students->classes_no == $teacher->classes_no){
-                                                    $teachers [] = $teacher->last_name . ' ' . $teacher->first_name;
-                                                }
-                                            }
-                                            
-                                        }
-                                    }
-
-                                    $teachers = array_unique($teachers);
-                                    $teachers_count = count($teachers);
-
-                                    if($teachers_count >= 1){
-                                    
-                                        $teachers_to_show = '';
-                                        foreach($teachers as $teacher){
-                                            $teachers_to_show .= $teacher . ', ';
-                                        }
-
-                                        echo rtrim($teachers_to_show, ', ');
-                                    }
+                                    echo $classes_name[$i] . ', ';
                                 }
-                            ?>
-                            </td>
+                            }
 
-                            <td style="display:flex; flex-direction: row; justify-content: space-evenly;"><a href="{{action('StudentController@edit', $students->user_no)}}">Edit</a> | <form action="{{ route('student.destroy', $students->user_no) }}" method="POST">
-                                {{ method_field('DELETE') }}
-                                {{ csrf_field() }}
-                                <button style="color: white; background-color: red; cursor:pointer;">Delete</button>
-                            </form></td>
-                        </tr>
-                    @endif
+                        ?>
+                    </td>
+
+                    <td class="td-teacher-name">
+                        @if(empty($selected_class) && empty($selected_teacher))
+                            @foreach($periods as $period)
+
+                                @php #echo in_array($period->classes_no, $classes_no); @endphp
+
+                                @if(in_array($period->classes_no, $classes_no) && $period->user_no == $students->user_no)
+
+                                    @foreach($teacher_options as $t_options)
+                                        @if($period->teacher_user_no == $t_options->user_no)
+                                            {{$t_options->last_name}} {{$t_options->first_name}},
+                                        @endif
+                                    @endforeach
+
+                                @endif
+
+                            @endforeach
+
+                        @else
+                            
+
+                            @foreach($teacher_options as $t_options)
+                                @if($students->teacher_user_no == $t_options->user_no)
+                                    {{$t_options->last_name}} {{$t_options->first_name}}
+                                @endif
+                            @endforeach
+
+
+                        @endif
+                    </td>
+
+                    <td style="display:flex; flex-direction: row; justify-content: space-evenly;"><a href="{{action('StudentController@edit', $students->user_no)}}">Edit</a> | <form action="{{ route('student.destroy', $students->user_no) }}" method="POST">
+                        {{ method_field('DELETE') }}
+                        {{ csrf_field() }}
+                        <button style="color: white; background-color: red; cursor:pointer;">Delete</button>
+                    </form></td>
+                </tr>
              @endforeach
         </tbody>
     </table>

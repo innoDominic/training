@@ -9,6 +9,8 @@ use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\PlottedClassesController;
 use App\Http\Controllers\AttendanceController;
 
+use App\Models\PlottedClasses;
+use App\Models\PlottedClassesTeacher;
 use App\Models\Attendance;
 
 Route::get('/', function () {
@@ -71,13 +73,7 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
             }
         }
 
-        $classes_under_students = [];
-        $classes_under_teachers = [];
-
-        if(empty($selected_class) || empty($selected_teacher)){
-            $classes_under_students = PlottedClassesController::getClassesUnderStudents();
-            $classes_under_teachers = PlottedClassesController::getClassesUnderTeachers();
-        }
+        $periods = PlottedClassesController::getPeriods();
 
         return view('student', [
             'result'                  =>  $result,
@@ -88,8 +84,7 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
             'selected_class_name'     =>  $class_name,
             'selected_class'          =>  $selected_class,
             'student_to_search'       =>  $student_to_search,
-            'classes_under_students'  =>  $classes_under_students,
-            'classes_under_teachers'  =>  $classes_under_teachers,
+            'periods'                 =>  $periods,
             'student_table_results'   =>  StudentController::show(request())
         ]);
 
@@ -322,9 +317,55 @@ Route::group(['middleware' => 'redirect.authenticated'], function(){
 
     Route::post('admin/plot-class/plot-class-student', 'PlottedClassesController@plotStudentToClass');
     Route::post('admin/plot-teacher/plot-class-teacher', 'PlottedClassesController@plotClassToTeacher');
+    Route::post('admin/plot-teacher/plot-class-teacher-student', 'PlottedClassesController@plotStudentToTeacherClass');
+
+    Route::get('/admin/plot-teacher/plot-periods/{teacher_plot_no}/{class_name}/{class_no}/{period}/{selected_teacher}/edit', function($teacher_plot_no, $class_name, $class_no, $period, $selected_teacher){
+
+        $plotted_students_teacher = new PlottedClassesTeacher;
+        $plotted_students_teacher = $plotted_students_teacher->select('student_id', 'first_name', 'last_name', 'student_plot_no', 'teacher_user_no')
+        ->join('plotted_classes as plot_class', 'plot_class.plot_no', '=', 'plotted_classes_teacher.student_plot_no')
+        ->join('user', 'user.user_no', '=', 'plot_class.user_no')
+        ->join('student', 'student.user_no', '=', 'user.user_no')
+        ->where('plot_class.period', $period)
+        ->where('plot_class.classes_no', $class_no)
+        ->where('plotted_classes_teacher.teacher_plot_no', $teacher_plot_no)
+        ->where('plotted_classes_teacher.teacher_user_no', $selected_teacher)->get();
+
+        $student_plot_nums = [];
+        foreach($plotted_students_teacher as $plot_class){
+            $student_plot_nums [] = $plot_class->student_plot_no;
+        }
+
+        $plotted_classes = new PlottedClasses;
+        $plotted_classes = $plotted_classes->join('classes as class', 'class.classes_no', '=', 'plotted_classes.classes_no')
+        ->join('student', 'student.user_no', '=', 'plotted_classes.user_no')
+        ->join('user', 'user.user_no', '=', 'student.user_no')
+        ->where('plotted_classes.classes_no', $class_no)
+        ->whereNotIn('plotted_classes.plot_no', $student_plot_nums)
+        ->where('period', $period)->get();
+
+        $result = '';
+        if(request()->has('result')){
+            $result = request('result');
+        }
+        
+        return view('plot-teacher-students', [
+            'students_unassigned' => $plotted_classes,
+            'students_assigned' => $plotted_students_teacher,
+            'selected_class' => $class_no,
+            'selected_class_name' => $class_name,
+            'selected_period' => $period,
+            'selected_teacher' => $selected_teacher,
+            'teacher_plot_no' => $teacher_plot_no,
+            'result' => $result
+        ]);
+
+    })->name('plot-student-teacher-list');
+
+    Route::delete('/admin/plot-teacher/plot-class-teacher-student/{student_plot_no}/{teacher_plot_no}', 'PlottedClassesController@deletePlottedStudentTeacher')->name('plot-class-teacher-student.destroy');
 
     Route::delete('admin/plot-class/delete/{plot_no}/{selected_class}', 'PlottedClassesController@deletePlottedClass')->name('plot_class.destroy');
-    Route::delete('admin/plot-teacher/delete/{class_no}/{selected_teacher}/{selected_period}', 'PlottedClassesController@deletePlottedTeacher')->name('plot_class_teacher.destroy');
+    Route::delete('admin/plot-teacher/delete/{class_no}/{selected_teacher}/{period}', 'PlottedClassesController@deletePlottedTeacher')->name('plot_class_teacher.destroy');
 
     Route::get('teacher/attendance/{class_no}/{selected_date}/{period}/edit', function($class_no, $selected_date, $period){
 

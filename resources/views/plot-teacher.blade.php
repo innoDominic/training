@@ -58,9 +58,9 @@
                 <tr>
                     <td>{{$class->classes_name}}</td>
                     <td>{{$class->period}}</td>
-                    <td>
-                    @php #dd($class->classes_no, $selected_teacher, $selected_period); @endphp
-                        <form action="{{ route('plot_class_teacher.destroy', ['class_no' => $class->classes_no, 'selected_teacher' => $selected_teacher, 'selected_period' => $class->period]) }}" method="POST">
+                    <td style="display:flex; flex-direction: row; justify-content: space-evenly;">
+                    <a href="/admin/plot-teacher/plot-periods/{{$class->plot_no}}/{{$class->classes_name}}/{{$class->classes_no}}/{{$class->period}}/{{$selected_teacher}}/edit">Link Students</a>    
+                    | <form action="{{ route('plot_class_teacher.destroy', ['class_no' => $class->classes_no, 'selected_teacher' => $selected_teacher, 'period' => $class->period]) }}" method="POST">
                             {{ method_field('DELETE') }}
                             {{ csrf_field() }}
                             <button style="color: white; background-color: red; cursor:pointer;">Delete</button>

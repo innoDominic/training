@@ -78,7 +78,7 @@
 <div style="width: 100%; display:flex; flex-direction: column; justify-content: flex-start; align-items: center; margin-top:40px;">
 
     <form style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 20px; width: 100%; border: solid 1px black;" method="POST" action="/admin/plot-class/plot-class-student">
-        <div style="width:50%;">
+        <div style="width:80%;">
             <label>
                 Add Student:
                 <select type="text" class="user_no" name="user_no" style="border: solid 1px black;">
@@ -92,7 +92,7 @@
             <input type="text" class="selected_period_to_plot" name="selected_period_to_plot" value="{{$selected_period}}" hidden />   
             @csrf 
         </div>
-        <div style="width: 50%; display: flex; flex-direction: column; justify-content: flex-end;">
+        <div style="width: 20%; display: flex; flex-direction: column; justify-content: flex-end;">
             <button style="max-width: 200px; margin: 0 auto; max-height: 50px; padding: 10px;" class="addClassBtn">Add</button>
         </div>
     </form>

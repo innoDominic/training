@@ -277,35 +277,72 @@ class StudentController extends Controller
             $selected_teacher = $request->input('srchStudentByTeacher');
             $student_name     = trim($request->input('srchStudentByName'));
 
-            $student = $student->select('student.user_no', 'student.student_id', 'user.first_name', 'user.last_name')
-            ->join('user', 'user.user_no', '=', 'student.user_no');
+            #dd($student_name, $selected_class, $selected_teacher);
+
+            $student = $student->select('student.user_no', 'student.student_id', 'user.first_name', 'user.last_name');
+
+            #Query Build - Join
+            $student = $student->join('user', 'user.user_no', '=', 'student.user_no');
+
+            if(!empty($selected_teacher) && !empty($selected_class)){
+
+                $student = $student->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
+                ->join('plotted_classes_teacher as plot_class_teach', 'plot_class_teach.student_plot_no', '=', 'plot_class.plot_no')
+                ->join('classes', 'classes.classes_no', '=', 'plot_class.classes_no'); 
+                 
+            }else if(empty($selected_teacher) && !empty($selected_class)){
+
+                $student = $student
+                ->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
+                ->join('plotted_classes_teacher as plot_class_teach', 'plot_class_teach.student_plot_no', '=', 'plot_class.plot_no')
+                    ->join('classes', 'classes.classes_no', '=', 'plot_class.classes_no');
+
+            }else if(!empty($selected_teacher) && empty($selected_class)){
+
+                $student = $student->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
+                    ->join('plotted_classes_teacher as plot_class_teach', 'plot_class_teach.student_plot_no', '=', 'plot_class.plot_no')
+                    ->join('classes', 'classes.classes_no', '=', 'plot_class.classes_no');
+
+            }
 
             #Query Build - Additional Selection
             if(!empty($selected_class)){
-                $student = $student->addSelect('classes.classes_no', 'classes.classes_name');
-            }
-
-            #Query Build - Join
-            if(!empty($selected_class) || !empty($selected_teacher)){
-                $student = $student->join('plotted_classes as plot_class', 'plot_class.user_no', '=', 'user.user_no')
-                ->join('classes', 'classes.classes_no', '=', 'plot_class.classes_no');
-            }
-
-            #Query Build - Where Conditions
-            if(!empty($selected_class)){
-                $student = $student->where('classes.classes_no', '=', $selected_class);
+                $student = $student->addSelect('classes.classes_no', 'classes.classes_name', 'plot_class_teach.teacher_user_no');
             }
 
             if(!empty($selected_teacher)){
-                $classes_list = PlottedClassesController::getClassesByTeacher($selected_teacher);
-                $classes_ids = [];
+                $student = $student->addSelect('plot_class_teach.teacher_user_no', 'classes.classes_no', 'classes.classes_name');
+            }
 
-                foreach($classes_list as $class){
-                    $classes_ids [] = $class->classes_no;
+            #Query Build - Where Conditions
+            if(!empty($selected_class) && !empty($selected_teacher)){
+
+                $student = $student->where('plot_class_teach.teacher_user_no', $selected_teacher)
+                ->where('classes.classes_no', $selected_class);
+
+            }else if(!empty($selected_class) && empty($selected_teacher)){
+
+                $student = $student->where('classes.classes_no', '=', $selected_class);
+
+            }else{
+
+                if(!empty($selected_class)){
+                    $student = $student->where('classes.classes_no', '=', $selected_class);
                 }
 
-                $student = $student->whereIn('plot_class.classes_no', $classes_ids)
-                ->where('user.user_type', 2);
+                if(empty($selected_class) && !empty($selected_teacher)){
+                    $classes_list = PlottedClassesController::getPlottedClassesByTeacher($selected_teacher);
+                    $classes_ids = [];
+    
+                    foreach($classes_list as $class){
+                        $classes_ids [] = $class->classes_no;
+                    }
+    
+                    $student = $student->whereIn('plot_class.classes_no', $classes_ids)
+                    ->where('user.user_type', 2)
+                    ->where('plot_class_teach.teacher_user_no', $selected_teacher);
+                }
+
             }
 
             if(!empty($student_name)){
@@ -317,12 +354,14 @@ class StudentController extends Controller
                }) ;
             }
 
-            return $student->paginate(3)->withPath('/admin/student');
+            return $student->orderBy('student.student_id', 'asc')->paginate(3)->withPath('/admin/student');
 
         }
 
         return $student->select('student.user_no', 'student.student_id', 'user.first_name', 'user.last_name')
-        ->join('user', 'user.user_no', '=', 'student.user_no')->paginate(3)->withPath('/admin/student');
+        ->join('user', 'user.user_no', '=', 'student.user_no')
+        ->orderBy('student.student_id', 'asc')
+        ->paginate(3)->withPath('/admin/student');
 
     }
 

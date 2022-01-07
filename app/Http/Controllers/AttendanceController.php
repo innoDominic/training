@@ -80,7 +80,7 @@ class AttendanceController extends Controller
         $attendance = new Attendance;
 
         $plotted_classes = new PlottedClassesController;
-        $res1 = $plotted_classes->getStudentsIncludedByClass($class_no, $period);
+        $res1 = $plotted_classes->getStudentsIncludedByClassAndTeacher($class_no, $period);
 
         $res2 = $attendance->select('plot_class.plot_no', 'attendance.att_status')
         ->join('plotted_classes as plot_class', 'plot_class.plot_no', '=', 'attendance.plot_no')
